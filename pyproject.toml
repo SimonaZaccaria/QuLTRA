@@ -1,0 +1,28 @@
+[project]
+name = "qultra"
+version = "0.1.0"
+description = "Quantum Lumped and Transmission Resonator Analyzer"
+authors = [
+  { name = "Simona Zaccaria", email = "simona.zaccaria4@unibo.it" },
+  {name = "Antonio Gnudi", email= "antonio.gnudi@unibo.it"}
+]
+readme = "README.md"
+license = { text = "MIT" }
+
+requires-python = ">=3.8"
+
+dependencies = [
+  "numpy",
+  "scipy",
+  "tabulate"
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
