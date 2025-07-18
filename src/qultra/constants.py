@@ -10,3 +10,4 @@ phi0=h/(2*e)
 epsilon_r=11.9
 epsilon_eff=(1+epsilon_r)/2 #for silicon substrate
 v=c/np.sqrt(epsilon_eff)
+step=0.1 #step for frequency sweep
