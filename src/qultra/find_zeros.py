@@ -1,9 +1,15 @@
 import numpy as np
 from scipy.optimize import newton, brentq, root_scalar
 
+try:
+    from . import constants   # Importa il modulo intero
+except ImportError:
+    import constants  
+
+
 
 def zero_algo(admittance, starting_point, final_point):
-    step=0.1
+    
     zero_points=[]
     def f(z):
         det_Y,n,_= admittance(2j*np.pi*1e9*z)
@@ -15,13 +21,13 @@ def zero_algo(admittance, starting_point, final_point):
             det= det_Y.imag
         return det
     
-    for a in np.arange(starting_point,final_point,step):
-        b=a+2*step
+    for a in np.arange(starting_point,final_point,constants.step):
+        b=a+2*constants.step
         if f(a)*f(b)<0:
             zero=brentq(f,a,b)
             #print(zero)
             det_Y,_,k= admittance(2j*np.pi*1e9*zero)
-            if k<=1 and abs(det_Y) < 1e-6:
+            if k<=1 and abs(det_Y) < 1e-3:
                 zero_points.append(zero)
    
     if not zero_points:
