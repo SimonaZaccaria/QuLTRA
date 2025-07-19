@@ -43,6 +43,8 @@ def zero_algo(admittance, starting_point, final_point):
 
 def zero_algo_complete(admittance,guess_points):
     zero_points=[]
+    zero_points1=[]
+    zero_points_final=[]
     complex_guess_points=[1j*1e9*x0 for x0 in guess_points]
 
     def f_with_loss(z):
@@ -53,13 +55,27 @@ def zero_algo_complete(admittance,guess_points):
         zero_point=newton(f_with_loss,x0,tol=1.48e-07, maxiter=150)
         if zero_point.real<0: #exclude non stable points
             zero_points.append([zero_point.imag/1e9,zero_point.real/1e6])
+        zero_point1 =  newton(f_with_loss,x0-2*np.pi*100e6,tol=1.48e-7, maxiter=150)
+        if zero_point1.real<0: #exclude non stable points
+            zero_points1.append([zero_point1.imag/1e9,zero_point1.real/1e6])
+
+    zero_points_final=zero_points+zero_points1
+    zero_points_final_reduced=remove_complex_duplicates(zero_points_final)
     
-    return zero_points
+    return zero_points_final_reduced
 
 def remove_duplicates(values, tol=1e-10):
     values = sorted(values)
     result = []
     for v in values:
         if not result or abs(v - result[-1]) > tol:
+            result.append(v)
+    return result
+
+def remove_complex_duplicates(values, tol=1e-10):
+    values = sorted(values, key=lambda x: x[0])  # Sort by the real part
+    result = []
+    for v in values:
+        if not result or abs(v[0] - result[-1][0]) > tol:
             result.append(v)
     return result
