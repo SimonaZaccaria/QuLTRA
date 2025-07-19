@@ -2,7 +2,7 @@ import numpy as np
 from scipy.optimize import root
 from scipy.constants import epsilon_0, mu_0
 
-c=3e8 #m/s
+c=299792458 #m/s
 e = 1.60217657e-19  # electron charge
 h = 6.62606957e-34  # Plank's
 hbar=h/2/np.pi
