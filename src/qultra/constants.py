@@ -11,3 +11,4 @@ epsilon_r=11.9
 epsilon_eff=(1+epsilon_r)/2 #for silicon substrate
 v=c/np.sqrt(epsilon_eff)
 step=0.1 #step for frequency sweep
+newton_tol=1.48e-7 #tolerance for newton method
