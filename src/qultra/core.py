@@ -5,10 +5,10 @@ import numbers
 from tabulate import tabulate
 
 try:
-    from .constants import*
+    from .constants import *   # import relativo (da pacchetto)
 except ImportError:
-    # When running from source without pip installation
-    from constants import *
+    from constants import *   # import assoluto (da sorgente)
+
 
 try:
     from .find_zeros import*
@@ -1184,5 +1184,14 @@ class QCircuit:
         self.show_chi()
         return
 
+    def get_Z_submatrix(self,port,f,k=0):
+        z=2*np.pi*1e6*k + 1j*2*np.pi*1e9*f
+        Y=self.build_total_Y_matrix(z)
+        Z=np.linalg.inv(Y)
+        Z_submatrix=np.zeros((len(port),len(port)),dtype=complex)
+        for i in range(len(port)):
+            for j in range(len(port)):
+                Z_submatrix[i,j]=Z[port[i],port[j]]
+        return Z_submatrix
 
 
