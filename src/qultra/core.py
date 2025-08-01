@@ -1183,7 +1183,7 @@ class QCircuit:
         self.show_modes()
         self.show_chi()
         return
-'''
+
     def get_Z_submatrix(self,port,f,k=0):
         z=2*np.pi*1e6*k + 1j*2*np.pi*1e9*f
         Y=self.build_total_Y_matrix(z)
@@ -1193,5 +1193,5 @@ class QCircuit:
             for j in range(len(port)):
                 Z_submatrix[i,j]=Z[port[i]-1,port[j]-1]
         return Z_submatrix
-'''
+
 
