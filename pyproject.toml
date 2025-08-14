@@ -7,7 +7,8 @@ authors = [
   {name = "Antonio Gnudi", email= "antonio.gnudi@unibo.it"}
 ]
 readme = "README.md"
-license = { text = "MIT" }
+license = { file = "LICENSE" }
+
 
 requires-python = ">=3.8"
 
