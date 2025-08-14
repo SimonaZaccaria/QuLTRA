@@ -17,7 +17,7 @@ You can install QuLTRA directly from PyPI using pip:
 
 ```bash
 pip install qultra
-
+```
 
 For more details, visit the PyPI project page: [https://pypi.org/project/qultra/](https://pypi.org/project/qultra/)
 
