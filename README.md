@@ -11,3 +11,14 @@ The library provides tools to compute:
 
 QuLTRA is designed to support fast, layout-independent modeling in the early design stages, before full electromagnetic simulations.
 
+## Installation
+
+You can install QuLTRA directly from PyPI using pip:
+
+```bash
+pip install qultra
+
+
+For more details, visit the PyPI project page: [https://pypi.org/project/qultra/](https://pypi.org/project/qultra/)
+
+
