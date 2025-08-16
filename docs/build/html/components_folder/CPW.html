@@ -1,0 +1,205 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coplanar waveguide line &mdash; QuLTRA v0.1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5e3f2911"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Coplanar waveguide coupler" href="CPW_coupler.html" />
+    <link rel="prev" title="Resistor" href="resistance.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            QuLTRA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Tutorials.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../Documentation.html">Documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../components.html">Circuit components</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="capacitance.html">Capacitor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inductance.html">Inductor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="junciton.html">Josepshon junciton</a></li>
+<li class="toctree-l3"><a class="reference internal" href="resistance.html">Resistor</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Coplanar waveguide line</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#qultra.CPW"><code class="docutils literal notranslate"><span class="pre">CPW</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="CPW_coupler.html">Coplanar waveguide coupler</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../circuit.html">Circuit analysis</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">QuLTRA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../Documentation.html">Documentation</a></li>
+          <li class="breadcrumb-item"><a href="../components.html">Circuit components</a></li>
+      <li class="breadcrumb-item active">Coplanar waveguide line</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/components_folder/CPW.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="coplanar-waveguide-line">
+<h1>Coplanar waveguide line<a class="headerlink" href="#coplanar-waveguide-line" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="qultra.CPW">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qultra.</span></span><span class="sig-name descname"><span class="pre">CPW</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_minus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_plus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qultra/core.html#CPW"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qultra.CPW" title="Link to this definition"></a></dt>
+<dd><p>Represents a CPW component</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_minus</strong> (<em>int</em>) – The node to which the negative terminal is connected</p></li>
+<li><p><strong>node_plus</strong> (<em>int</em>) – The node to which the positive terminal is connected</p></li>
+<li><p><strong>l</strong> (<em>float</em>) – Length of the line [m]</p></li>
+<li><p><strong>Z0</strong> (<em>float</em>) – Charateristic impedence [Ohm]. Default is 50 Ohm</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="qultra.CPW.admittance_matrix">
+<span class="sig-name descname"><span class="pre">admittance_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qultra/core.html#CPW.admittance_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qultra.CPW.admittance_matrix" title="Link to this definition"></a></dt>
+<dd><p>Construct the complex admittance matrix of a cpw</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>z</strong> (<em>complex</em>) – Complex variable (complex frequency)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Y_matrix</strong> – complex admittance matrix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qultra.CPW.current">
+<span class="sig-name descname"><span class="pre">current</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">V_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V_l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qultra/core.html#CPW.current"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qultra.CPW.current" title="Link to this definition"></a></dt>
+<dd><p>Calculate the current in a CPW given the voltage node values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>V_0</strong> (<em>complex</em>) – Voltage at the start node.</p></li>
+<li><p><strong>V_l</strong> (<em>complex</em>) – Voltage at the end node.</p></li>
+<li><p><strong>z</strong> (<em>complex</em>) – Complex variable (complex frequency).</p></li>
+<li><p><strong>x</strong> (<em>float</em>) – Position along the CPW.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>I</strong> – Calculated current at position x.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>complex</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qultra.CPW.inductive_energy">
+<span class="sig-name descname"><span class="pre">inductive_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">V_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V_l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qultra/core.html#CPW.inductive_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qultra.CPW.inductive_energy" title="Link to this definition"></a></dt>
+<dd><p>Calculate the inductive energy stored in a CPW.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>V_0</strong> (<em>complex</em>) – Voltage at the start node.</p></li>
+<li><p><strong>V_l</strong> (<em>complex</em>) – Voltage at the end node.</p></li>
+<li><p><strong>z</strong> (<em>complex</em>) – Complex variable (complex frequency).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>E</strong> – Inductive energy stored in the CPW.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>complex</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="resistance.html" class="btn btn-neutral float-left" title="Resistor" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="CPW_coupler.html" class="btn btn-neutral float-right" title="Coplanar waveguide coupler" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Simona Zaccaria, Antonio Gnudi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

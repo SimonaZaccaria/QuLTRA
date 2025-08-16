@@ -1,0 +1,1615 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>qultra.core &mdash; QuLTRA v0.1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5e3f2911"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            QuLTRA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Documentation.html">Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">QuLTRA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">qultra.core</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for qultra.core</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.integrate</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numbers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tabulate</span><span class="w"> </span><span class="kn">import</span> <span class="n">tabulate</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.constants</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>   <span class="c1"># import relativo (da pacchetto)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">constants</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>   <span class="c1"># import assoluto (da sorgente)</span>
+
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.find_zeros</span><span class="w"> </span><span class="kn">import</span><span class="o">*</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="c1"># When running from source without pip installation</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">find_zeros</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">def zero_algo(admittance, starting_point, final_point):</span>
+<span class="sd">     </span>
+<span class="sd">        Finds a zero (root) of a complex admittance function in the jω domain.</span>
+
+<span class="sd">        This function takes a complex-valued admittance function defined in the jω domain </span>
+<span class="sd">        and attempts to find a frequency ω such that admittance(jω) = 0 within the interval </span>
+<span class="sd">        [starting_point, final_point]. It is typically used to compute the resonant or </span>
+<span class="sd">        eigenfrequencies of a circuit by passing the characteristic polynomial as input.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            admittance: A callable function of a complex variable z = jω.</span>
+<span class="sd">            starting_point:The lower bound of the frequency range (in GHz).</span>
+<span class="sd">            final_point: The upper bound of the frequency range (in GHz).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The frequency f [GHz] where admittance(jω) ≈ 0, if found.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If root-finding fails or no zero is detected in the interval.</span>
+<span class="sd">     </span>
+
+<span class="sd">     minimum_points=[]</span>
+<span class="sd">     step_for_interval=0.1</span>
+<span class="sd">    </span>
+<span class="sd">     for start_interval in np.arange(starting_point,final_point,step_for_interval):</span>
+<span class="sd">    </span>
+<span class="sd">        step_for_nodes=0.001</span>
+<span class="sd">        minimum_value=float(&#39;inf&#39;)</span>
+<span class="sd">        end_interval=start_interval+step_for_interval+step_for_nodes</span>
+<span class="sd">        N=int((end_interval-start_interval)/step_for_nodes)+1</span>
+<span class="sd">    </span>
+<span class="sd">        for f in np.linspace(start_interval,end_interval,N):</span>
+<span class="sd">            function_value=abs(admittance(1j*2*np.pi*1e9*f))</span>
+<span class="sd">            if function_value&lt; minimum_value:</span>
+<span class="sd">                minimum_value=function_value</span>
+<span class="sd">                f_min=f</span>
+<span class="sd">        if f_min != start_interval and f_min !=end_interval:</span>
+<span class="sd">            </span>
+<span class="sd">            new_start=f_min-step_for_nodes</span>
+<span class="sd">            new_end=f_min+step_for_nodes</span>
+<span class="sd">            new_step_for_nodes=step_for_nodes/10</span>
+<span class="sd">            k=1</span>
+<span class="sd">            N=int((new_end-new_start)/new_step_for_nodes)+1</span>
+<span class="sd">            minimum_value=float(&#39;inf&#39;)</span>
+<span class="sd">            minimum_value_array=[]</span>
+<span class="sd">            while k&lt;26:</span>
+<span class="sd">                for f in np.linspace(new_start,new_end,N):</span>
+<span class="sd">                    function_value=abs(admittance(1j*2*np.pi*1e9*f))</span>
+<span class="sd">                    if function_value&lt; minimum_value:</span>
+<span class="sd">                        minimum_value=function_value</span>
+<span class="sd">                        f_min=f</span>
+<span class="sd">                new_start=f_min-new_step_for_nodes</span>
+<span class="sd">                new_end=f_min+new_step_for_nodes</span>
+<span class="sd">                new_step_for_nodes=new_step_for_nodes/10</span>
+<span class="sd">                N=int((new_end-new_start)/new_step_for_nodes)+1</span>
+<span class="sd">                minimum_value_array.append(minimum_value)</span>
+<span class="sd">                k=k+1</span>
+<span class="sd">            if minimum_value_array[24]*1e5&lt;minimum_value_array[0]:</span>
+<span class="sd">                minimum_points.append(f_min)</span>
+<span class="sd">     if not minimum_points:</span>
+<span class="sd">         raise ValueError(&quot;No zeros found in the specified interval.&quot;)</span>
+<span class="sd">    </span>
+<span class="sd">     return minimum_points</span>
+
+<span class="sd">def zero_algo_complete(admittance,f_starting_point, f_end_point):</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    Finds complex roots (zeros) of a complex admittance function within a given frequency range.</span>
+
+<span class="sd">    This function searches for local minima of |admittance(z)| where z = k + jω,</span>
+<span class="sd">    sweeping through a specified real frequency interval. For each small interval,</span>
+<span class="sd">    it refines the search in both real and imaginary components to identify precise</span>
+<span class="sd">    complex frequencies where the magnitude of the admittance approaches zero.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        admittance: A callable function of a complex variable z, representing the admittance of the system.</span>
+<span class="sd">        f_starting_point: The lower bound of the frequency range (in GHz).</span>
+<span class="sd">        f_end_point: The upper bound of the frequency range (in GHz).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A list of complex frequencies [f,k] where the admittance function is (approximately) zero.</span>
+<span class="sd">        f is expressed in GHz, k is expressed in MHz.</span>
+<span class="sd">    </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If no zero is found within the specified frequency range.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="sd">    minimum_points=[]</span>
+<span class="sd">    f_step=0.01</span>
+<span class="sd">    k_step=0.01</span>
+
+<span class="sd">    k_starting_point=-10</span>
+<span class="sd">    k_end_point=1 #MHz</span>
+
+<span class="sd">    N_f=int((f_end_point-f_starting_point)/(100*f_step))+1</span>
+<span class="sd">    N_k=int((k_end_point-k_starting_point)/(100*k_step))+1</span>
+<span class="sd">    </span>
+
+<span class="sd">    for f_start_interval in np.linspace(f_starting_point,f_end_point,N_f):</span>
+<span class="sd">        </span>
+<span class="sd">         f_end_interval=f_start_interval+101*f_step</span>
+<span class="sd">         for k_start_interval in np.linspace(k_starting_point,k_end_point,N_k):</span>
+<span class="sd">             k_end_interval=k_start_interval+101*k_step</span>
+<span class="sd">             minimum_value=float(&#39;inf&#39;)</span>
+<span class="sd">             N1_f=int((f_end_interval-f_start_interval)/f_step)+1</span>
+<span class="sd">             N1_k=int((k_end_interval-k_start_interval)/k_step)+1</span>
+<span class="sd">             for f in np.linspace(f_start_interval,f_end_interval,N1_f):</span>
+<span class="sd">    </span>
+<span class="sd">                 for k in np.linspace(k_start_interval,k_end_interval,N1_k):</span>
+<span class="sd">                     z=2*np.pi*1e6*k+1j*2*np.pi*1e9*f #f in GHz, k in MHz</span>
+<span class="sd">                     function_value=abs(admittance(z))</span>
+<span class="sd">                </span>
+<span class="sd">                     if function_value&lt; minimum_value:</span>
+<span class="sd">                        minimum_value=function_value</span>
+<span class="sd">                        f_min=f</span>
+<span class="sd">                        k_min=k</span>
+<span class="sd">            </span>
+<span class="sd">             if f_min != f_start_interval and f_min !=f_end_interval and k_min !=k_start_interval and k_min!=k_end_interval:</span>
+<span class="sd">                 f_new_start=f_min-f_step</span>
+<span class="sd">                 f_new_end=f_min+f_step</span>
+<span class="sd">                 k_new_start=k_min-k_step</span>
+<span class="sd">                 k_new_end=k_min+k_step</span>
+<span class="sd">                 f_new_step=f_step/10</span>
+<span class="sd">                 k_new_step=k_step/10</span>
+<span class="sd">                 j=1</span>
+<span class="sd">                 minimum_value=float(&#39;inf&#39;)</span>
+<span class="sd">                 minimum_value_array=[]</span>
+<span class="sd">                 N2_f=int((f_new_end-f_new_start)/f_new_step)+1</span>
+<span class="sd">                 N2_k=int((k_new_end-k_new_start)/k_new_step)+1</span>
+<span class="sd">                 while j&lt;26:</span>
+<span class="sd">                     for f in np.linspace(f_new_start,f_new_end,N2_f):</span>
+<span class="sd">                         for k in np.linspace(k_new_start,k_new_end,N2_k):</span>
+<span class="sd">                             z=2*np.pi*1e6*k+1j*2*np.pi*1e9*f #f in GHz, k in MHz</span>
+<span class="sd">                             function_value=abs(admittance(z))</span>
+<span class="sd">                             if function_value&lt; minimum_value:</span>
+<span class="sd">                                 minimum_value=function_value</span>
+<span class="sd">                                 f_min=f</span>
+<span class="sd">                                 k_min=k</span>
+<span class="sd">                     f_new_start=f_min-f_new_step</span>
+<span class="sd">                     f_new_end=f_min+f_new_step</span>
+<span class="sd">                     k_new_start=k_min-k_new_step</span>
+<span class="sd">                     k_new_end=k_min+k_new_step</span>
+<span class="sd">                     f_new_step=f_new_step/10</span>
+<span class="sd">                     k_new_step=k_new_step/10</span>
+<span class="sd">                     minimum_value_array.append(minimum_value)</span>
+<span class="sd">                     j=j+1</span>
+<span class="sd">                 </span>
+<span class="sd">                 if minimum_value_array[24]*1e3&lt;minimum_value_array[0]:</span>
+<span class="sd">                     minimum_points.append([f_min,k_min])</span>
+<span class="sd">    </span>
+<span class="sd">    if not minimum_points:</span>
+<span class="sd">        raise ValueError(&quot;No zeros found in the specified interval.&quot;)</span>
+<span class="sd">    return minimum_points</span>
+
+<span class="sd">def zero_algo(admittance, starting_point, final_point):</span>
+<span class="sd">    </span>
+<span class="sd">    Finds a zero (root) of a complex admittance function in the jω domain.</span>
+
+<span class="sd">    This function takes a complex-valued admittance function defined in the jω domain </span>
+<span class="sd">    and attempts to find a frequency ω such that admittance(jω) = 0 within the interval </span>
+<span class="sd">    [starting_point, final_point]. It is typically used to compute the resonant or </span>
+<span class="sd">    eigenfrequencies of a circuit by passing the characteristic polynomial as input.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        admittance: A callable function of a complex variable z = jω.</span>
+<span class="sd">        starting_point:The lower bound of the frequency range (in GHz).</span>
+<span class="sd">        final_point: The upper bound of the frequency range (in GHz).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The frequency f [GHz] where admittance(jω) ≈ 0, if found.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If root-finding fails or no zero is detected in the interval.</span>
+<span class="sd">    </span>
+<span class="sd">    def f(z):</span>
+<span class="sd">        return admittance(2*np.pi*1e9*z)</span>
+<span class="sd">    R=cxroots.Rectangle([-0.5,0.5],[starting_point, final_point])</span>
+<span class="sd">    sol=R.roots(f)</span>
+<span class="sd">    minimum_points=[zero.imag for zero in sol.roots]</span>
+<span class="sd">    return minimum_points</span>
+
+<span class="sd">def zero_algo_complete(admittance,starting_point, final_point):</span>
+<span class="sd">    def f(z):</span>
+<span class="sd">        return admittance(2*np.pi*1e6*z.real+2j*np.pi*1e9*z.imag)</span>
+<span class="sd">    R=cxroots.Rectangle([-10/1e3,0],[starting_point, final_point])</span>
+<span class="sd">    sol=R.roots(f,tol=1e-5)</span>
+<span class="sd">    minimum_points=[[zero.imag,zero.real] for zero in sol.roots]</span>
+<span class="sd">    return minimum_points</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="C">
+<a class="viewcode-back" href="../../components_folder/capacitance.html#qultra.C">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">C</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represent a capacitor component</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    node_minus : int</span>
+<span class="sd">        The node to which the negative terminal is connected</span>
+<span class="sd">    node_plus : int</span>
+<span class="sd">        The node to which the positive terminal is connected</span>
+<span class="sd">    C_value : float</span>
+<span class="sd">        Capacitance value [F]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">node_minus</span><span class="p">,</span><span class="n">node_plus</span><span class="p">,</span><span class="n">C_value</span><span class="p">):</span>
+ 
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_minus</span><span class="o">=</span><span class="n">node_minus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_plus</span><span class="o">=</span><span class="n">node_plus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_value</span><span class="o">=</span><span class="n">C_value</span> <span class="c1">#[udm]=F</span>
+    
+<div class="viewcode-block" id="C.admittance">
+<a class="viewcode-back" href="../../components_folder/capacitance.html#qultra.C.admittance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">admittance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">z</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the admittance of a capacitor C</span>
+
+<span class="sd">        Y = z * C</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        z : complex</span>
+<span class="sd">            Complex variable (complex frequency)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Y : complex</span>
+<span class="sd">            Complex admittance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">z</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">C_value</span></div>
+</div>
+
+    
+<div class="viewcode-block" id="L">
+<a class="viewcode-back" href="../../components_folder/inductance.html#qultra.L">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">L</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents an inductor component</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    node_minus : int</span>
+<span class="sd">        The node to which the negative terminal is connected</span>
+<span class="sd">    node_plus : int</span>
+<span class="sd">        The node to which the positive terminal is connected</span>
+<span class="sd">    L_value: float</span>
+<span class="sd">        Inductance value [H]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">node_minus</span><span class="p">,</span><span class="n">node_plus</span><span class="p">,</span><span class="n">L_value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_minus</span><span class="o">=</span><span class="n">node_minus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_plus</span><span class="o">=</span><span class="n">node_plus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">L_value</span><span class="o">=</span><span class="n">L_value</span> <span class="c1">#[udm]=H</span>
+    
+<div class="viewcode-block" id="L.admittance">
+<a class="viewcode-back" href="../../components_folder/inductance.html#qultra.L.admittance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">admittance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">z</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the admittance of an inductor L</span>
+
+<span class="sd">        Y = 1/s*L</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        z : complex</span>
+<span class="sd">            Complex variable (complex frequency)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Y : complex</span>
+<span class="sd">            Complex admittance</span>
+<span class="sd">        &quot;&quot;&quot;</span>    
+        <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">z</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">L_value</span><span class="p">)</span></div>
+</div>
+
+    
+<div class="viewcode-block" id="R">
+<a class="viewcode-back" href="../../components_folder/resistance.html#qultra.R">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">R</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a resistor component</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    node_minus : int</span>
+<span class="sd">        The node to which the negative terminal is connected</span>
+<span class="sd">    node_plus : int</span>
+<span class="sd">        The node to which the positive terminal is connected</span>
+<span class="sd">    R_value: float</span>
+<span class="sd">        Resistance value [Ohm]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">node_minus</span><span class="p">,</span><span class="n">node_plus</span><span class="p">,</span><span class="n">R_value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_minus</span><span class="o">=</span><span class="n">node_minus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_plus</span><span class="o">=</span><span class="n">node_plus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_value</span><span class="o">=</span><span class="n">R_value</span> <span class="c1">#[udm]=Ohm</span>
+    
+<div class="viewcode-block" id="R.admittance">
+<a class="viewcode-back" href="../../components_folder/resistance.html#qultra.R.admittance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">admittance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">z</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the admittance of a resistor R</span>
+<span class="sd">        </span>
+<span class="sd">        Y = 1/R</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Y : complex</span>
+<span class="sd">            Complex admittance</span>
+<span class="sd">        &quot;&quot;&quot;</span>    
+        <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">R_value</span></div>
+</div>
+
+<div class="viewcode-block" id="J">
+<a class="viewcode-back" href="../../components_folder/junciton.html#qultra.J">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">J</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a Josepshon junction component</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    node_minus : int</span>
+<span class="sd">        The node to which the negative terminal is connected</span>
+<span class="sd">    node_plus : int</span>
+<span class="sd">        The node to which the positive terminal is connected</span>
+<span class="sd">    J_values: float</span>
+<span class="sd">        Linear inductance value [H]</span>
+<span class="sd">    N: int</span>
+<span class="sd">        Number of junctions. Default is 1.</span>
+<span class="sd">        (N!=1 implements a JJ array)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">node_minus</span><span class="p">,</span><span class="n">node_plus</span><span class="p">,</span><span class="n">J_value</span><span class="p">,</span><span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_minus</span><span class="o">=</span><span class="n">node_minus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_plus</span><span class="o">=</span><span class="n">node_plus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">J_value</span><span class="o">=</span><span class="n">J_value</span> <span class="c1">#[udm]=H</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="o">=</span><span class="n">N</span> <span class="c1">#number of JJ in series</span>
+    
+<div class="viewcode-block" id="J.admittance">
+<a class="viewcode-back" href="../../components_folder/junciton.html#qultra.J.admittance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">admittance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">z</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the admittance of the linear inductor J associated to the junction</span>
+<span class="sd">        </span>
+<span class="sd">        Y = 1/s*J</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        z : complex</span>
+<span class="sd">            Complex variable (complex frequency)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Y : complex</span>
+<span class="sd">            Complex admittance</span>
+<span class="sd">        &quot;&quot;&quot;</span>    
+        <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">z</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">J_value</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="J.Ej">
+<a class="viewcode-back" href="../../components_folder/junciton.html#qultra.J.Ej">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">Ej</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the Josepshon energy of the junction</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Ej : float</span>
+<span class="sd">            Josephson energy.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">phi0</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">J_value</span><span class="o">/</span><span class="n">h</span></div>
+</div>
+
+
+<div class="viewcode-block" id="CPW">
+<a class="viewcode-back" href="../../components_folder/CPW.html#qultra.CPW">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CPW</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a CPW component</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    node_minus : int</span>
+<span class="sd">        The node to which the negative terminal is connected</span>
+<span class="sd">    node_plus : int</span>
+<span class="sd">        The node to which the positive terminal is connected</span>
+<span class="sd">    l: float</span>
+<span class="sd">        Length of the line [m]</span>
+<span class="sd">    Z0: float</span>
+<span class="sd">        Charateristic impedence [Ohm]. Default is 50 Ohm</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">node_minus</span><span class="p">,</span><span class="n">node_plus</span><span class="p">,</span><span class="n">l</span><span class="p">,</span><span class="n">Z0</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_minus</span><span class="o">=</span><span class="n">node_minus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_plus</span><span class="o">=</span><span class="n">node_plus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">=</span><span class="n">l</span> <span class="c1">#[udm]=m</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Z0</span><span class="o">=</span><span class="n">Z0</span> <span class="c1">#charaterstic impedence</span>
+        
+    
+<div class="viewcode-block" id="CPW.admittance_matrix">
+<a class="viewcode-back" href="../../components_folder/CPW.html#qultra.CPW.admittance_matrix">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">admittance_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">z</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construct the complex admittance matrix of a cpw</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        z : complex</span>
+<span class="sd">            Complex variable (complex frequency)</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Y_matrix: numpy array    </span>
+<span class="sd">            complex admittance matrix </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#Euler exponential</span>
+        <span class="n">exp_z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">*</span><span class="n">z</span><span class="o">/</span><span class="n">v</span><span class="p">)</span>
+        <span class="n">exp_mz</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">*</span><span class="n">z</span><span class="o">/</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="c1">#sine and cosine</span>
+        <span class="n">sine</span><span class="o">=</span><span class="p">(</span><span class="n">exp_z</span><span class="o">-</span><span class="n">exp_mz</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="n">j</span>
+        <span class="n">cosine</span><span class="o">=</span><span class="p">(</span><span class="n">exp_z</span><span class="o">+</span><span class="n">exp_mz</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+
+        <span class="n">denominator</span><span class="o">=</span><span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">Z0</span><span class="o">*</span><span class="n">sine</span>
+
+        <span class="c1">#matrix elements</span>
+        <span class="n">y_11</span><span class="o">=</span><span class="n">cosine</span><span class="o">/</span><span class="n">denominator</span>
+        <span class="n">y_12</span><span class="o">=-</span><span class="mi">1</span><span class="o">/</span><span class="n">denominator</span>
+        <span class="n">y_21</span><span class="o">=-</span><span class="mi">1</span><span class="o">/</span><span class="n">denominator</span>
+        <span class="n">y_22</span><span class="o">=</span><span class="n">cosine</span><span class="o">/</span><span class="n">denominator</span>
+
+        <span class="n">Y_matrix</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">y_11</span><span class="p">,</span><span class="n">y_12</span><span class="p">],[</span><span class="n">y_21</span><span class="p">,</span><span class="n">y_22</span><span class="p">]])</span>
+        <span class="k">return</span> <span class="n">Y_matrix</span></div>
+
+    
+<div class="viewcode-block" id="CPW.current">
+<a class="viewcode-back" href="../../components_folder/CPW.html#qultra.CPW.current">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">current</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">V_0</span><span class="p">,</span><span class="n">V_l</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the current in a CPW given the voltage node values.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        V_0 : complex</span>
+<span class="sd">            Voltage at the start node.</span>
+<span class="sd">        V_l : complex</span>
+<span class="sd">            Voltage at the end node.</span>
+<span class="sd">        z : complex</span>
+<span class="sd">            Complex variable (complex frequency).</span>
+<span class="sd">        x : float</span>
+<span class="sd">            Position along the CPW.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        I : complex</span>
+<span class="sd">            Calculated current at position x.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">exp_z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">*</span><span class="n">z</span><span class="o">/</span><span class="n">v</span><span class="p">)</span>
+        <span class="n">exp_mz</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">*</span><span class="n">z</span><span class="o">/</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="n">V_minus</span><span class="o">=</span><span class="p">(</span><span class="n">V_l</span><span class="o">-</span><span class="n">V_0</span><span class="o">*</span><span class="n">exp_mz</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">exp_z</span><span class="o">-</span><span class="n">exp_mz</span><span class="p">)</span>
+        <span class="n">V_plus</span><span class="o">=</span><span class="p">(</span><span class="n">V_0</span><span class="o">*</span><span class="n">exp_z</span><span class="o">-</span><span class="n">V_l</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">exp_z</span><span class="o">-</span><span class="n">exp_mz</span><span class="p">)</span>
+
+        <span class="n">I</span><span class="o">=</span><span class="p">(</span><span class="n">V_plus</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="o">*</span><span class="n">z</span><span class="o">/</span><span class="n">v</span><span class="p">)</span><span class="o">-</span><span class="n">V_minus</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">z</span><span class="o">/</span><span class="n">v</span><span class="p">))</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">Z0</span>
+        <span class="k">return</span> <span class="n">I</span></div>
+
+    
+<div class="viewcode-block" id="CPW.inductive_energy">
+<a class="viewcode-back" href="../../components_folder/CPW.html#qultra.CPW.inductive_energy">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inductive_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">V_0</span><span class="p">,</span><span class="n">V_l</span><span class="p">,</span><span class="n">z</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the inductive energy stored in a CPW.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        V_0 : complex</span>
+<span class="sd">            Voltage at the start node.</span>
+<span class="sd">        V_l : complex</span>
+<span class="sd">            Voltage at the end node.</span>
+<span class="sd">        z : complex</span>
+<span class="sd">            Complex variable (complex frequency).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        E : complex</span>
+<span class="sd">            Inductive energy stored in the CPW.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">a</span><span class="o">=</span><span class="mi">0</span>
+        <span class="n">b</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">integrand</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">(</span><span class="n">V_0</span><span class="p">,</span><span class="n">V_l</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">x</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">integral_value</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="n">integrand</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="c1">#integrate by using scipy and taking the first value of the tuple</span>
+        <span class="n">E</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Z0</span><span class="o">*</span><span class="n">integral_value</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">E</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="CPW_coupler">
+<a class="viewcode-back" href="../../components_folder/CPW_coupler.html#qultra.CPW_coupler">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CPW_coupler</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a 4-node CPW (coplanar waveguide) coupler.</span>
+
+<span class="sd">    This class initializes a CPW coupler component with its node connections,</span>
+<span class="sd">    gaps, individual CPWs, and physical length. It also computes the </span>
+<span class="sd">    capacitance and inductance matrices upon initialization.</span>
+
+<span class="sd">    Node ordering (top wiev)</span>
+<span class="sd">     ::</span>
+
+<span class="sd">        1----------2</span>
+
+<span class="sd">        3----------4</span>
+
+<span class="sd">    The diagrams below illustrate the widths and gaps of the CPW coupler, both in the case without a central ground plane (1) and in the </span>
+<span class="sd">    case with a ground plane between the CPW lines (2).</span>
+
+<span class="sd">    (1)</span>
+<span class="sd">     ::</span>
+
+<span class="sd">        GND                                           GND</span>
+<span class="sd">            |       |        |      |        |        |</span>
+<span class="sd">            |       |        |      |        |        |</span>
+<span class="sd">            |       |________|      |________|        |  </span>
+<span class="sd">              gap0    cpw0     gap1    cpw1    gap2</span>
+
+
+<span class="sd">    (2)</span>
+<span class="sd">     ::</span>
+
+<span class="sd">        GND                                                             GND</span>
+<span class="sd">            |       |        |      |      |        |       |       |</span>
+<span class="sd">            |       |        |      |      |        |       |       |</span>
+<span class="sd">            |       |________|      |______|        |_______|       |</span>
+<span class="sd">              gap0    cpw0     gap1    cpw1   gap2    cpw2    gap3</span>
+
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    nodes : list of int</span>
+<span class="sd">        List of 4 nodes to which the coupler is connected. Must have length 4.</span>
+<span class="sd">    gap : list of float</span>
+<span class="sd">        List of gaps between CPWs [um].</span>
+<span class="sd">    cpw : list</span>
+<span class="sd">        List of CPW segments&#39; width [um]</span>
+<span class="sd">    l : float</span>
+<span class="sd">        Physical length of the coupler [m].</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    C : ndarray</span>
+<span class="sd">        Capacitance matrix computed from the CPW configuration.</span>
+<span class="sd">    L : ndarray</span>
+<span class="sd">        Inductance matrix computed from the CPW configuration.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If `nodes` does not contain exactly 4 elements, or if `gap` does not</span>
+<span class="sd">        have length equal to `len(cpw) + 1`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">nodes</span><span class="p">,</span><span class="n">gap</span><span class="p">,</span><span class="n">cpw</span><span class="p">,</span><span class="n">l</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span><span class="o">!=</span><span class="mi">4</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span> <span class="p">(</span><span class="s2">&quot;The component must be connected to 4 nodes&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gap</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cpw</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`gap` must have length equal to `len(cpw) + 1`. Got len(gap) = </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">gap</span><span class="p">)</span><span class="si">}</span><span class="s2">, len(cpw) = </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">cpw</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gap</span><span class="o">=</span><span class="n">gap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cpw</span><span class="o">=</span><span class="n">cpw</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">=</span><span class="n">l</span> <span class="c1">#[udm]=m</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">CL_matrices</span><span class="p">()</span>
+
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">branch_point_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39; &#39;&#39;&#39;</span>
+        <span class="n">gap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gap</span>
+        <span class="n">cpw</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cpw</span>
+        <span class="n">a</span><span class="o">=</span><span class="p">[]</span> <span class="c1">#branch points destri</span>
+        <span class="n">b</span><span class="o">=</span><span class="p">[]</span> <span class="c1">#branch points sinistri</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1">#il punto a_0 ha sempre coordinata 0 che è dove pongo la mia orgine</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gap</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">x</span><span class="o">=</span><span class="mi">0</span>
+        <span class="n">y</span><span class="o">=</span><span class="n">gap</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cpw</span><span class="p">)):</span>
+            <span class="n">x</span><span class="o">+=</span><span class="p">(</span><span class="n">gap</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="n">cpw</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">y</span><span class="o">+=</span><span class="p">(</span><span class="n">gap</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">cpw</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="c1">#coordinate dei punti a che sono alla destra dei conduttori</span>
+            <span class="n">b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="c1">#coordinate dei punti b che sono alla sinistra dei conduttori</span>
+
+        <span class="n">a_coordinates</span><span class="o">=</span><span class="p">[</span><span class="nb">complex</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">a</span><span class="p">]</span>
+        <span class="n">b_coordinates</span><span class="o">=</span><span class="p">[</span><span class="nb">complex</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">b</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">a_coordinates</span><span class="p">,</span><span class="n">b_coordinates</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">conformal_mapping</span><span class="p">(</span><span class="n">a_coordinates</span><span class="p">,</span><span class="n">b_coordinates</span><span class="p">,</span><span class="n">c_coordinates</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">integral_by_part</span><span class="p">(</span><span class="n">z0</span><span class="p">,</span><span class="n">z1</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">f1</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+                <span class="n">u</span><span class="o">=</span><span class="mi">1</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">c_coordinates</span><span class="p">:</span>
+                    <span class="n">u</span><span class="o">=</span><span class="n">u</span><span class="o">*</span><span class="p">(</span><span class="n">z</span><span class="o">-</span><span class="n">c</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">a_coordinates</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">a</span><span class="o">!=</span><span class="n">z0</span> <span class="ow">and</span> <span class="n">a</span><span class="o">!=</span><span class="n">z1</span><span class="p">:</span>
+                        <span class="n">u</span><span class="o">=</span><span class="n">u</span><span class="o">*</span><span class="p">(</span><span class="n">z</span><span class="o">-</span><span class="n">a</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">b_coordinates</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">b</span><span class="o">!=</span><span class="n">z0</span> <span class="ow">and</span> <span class="n">b</span><span class="o">!=</span><span class="n">z1</span><span class="p">:</span>
+                        <span class="n">u</span><span class="o">=</span><span class="n">u</span><span class="o">*</span><span class="p">(</span><span class="n">z</span><span class="o">-</span><span class="n">b</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+                <span class="n">v</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">z</span><span class="o">-</span><span class="p">((</span><span class="n">z0</span><span class="o">+</span><span class="n">z1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="p">(</span><span class="n">z</span><span class="o">-</span><span class="n">z0</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">z</span><span class="o">-</span><span class="n">z1</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span>
+                <span class="n">f1</span><span class="o">=</span><span class="n">u</span><span class="o">*</span><span class="n">v</span>
+                <span class="k">return</span> <span class="n">f1</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">f2</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+                <span class="n">v</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">z</span><span class="o">-</span><span class="p">((</span><span class="n">z0</span><span class="o">+</span><span class="n">z1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="p">(</span><span class="n">z</span><span class="o">-</span><span class="n">z0</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">z</span><span class="o">-</span><span class="n">z1</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span>
+                <span class="n">prod1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="n">z</span> <span class="o">-</span> <span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">c_coordinates</span><span class="p">])</span>
+                <span class="n">prod2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">([(</span><span class="n">z</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">a_coordinates</span> <span class="k">if</span> <span class="n">a</span> <span class="o">!=</span> <span class="n">z0</span> <span class="ow">and</span> <span class="n">a</span> <span class="o">!=</span> <span class="n">z1</span><span class="p">])</span> \
+                    <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">([(</span><span class="n">z</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">b_coordinates</span> <span class="k">if</span> <span class="n">b</span> <span class="o">!=</span> <span class="n">z0</span> <span class="ow">and</span> <span class="n">b</span> <span class="o">!=</span> <span class="n">z1</span><span class="p">])</span>
+                <span class="n">u_prime</span><span class="o">=</span><span class="mi">0</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">c_coordinates</span><span class="p">:</span>
+                    <span class="n">prod3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="n">z</span> <span class="o">-</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">c_coordinates</span> <span class="k">if</span> <span class="n">d</span> <span class="o">!=</span> <span class="n">c</span><span class="p">])</span>
+                    <span class="n">u_prime</span> <span class="o">+=</span> <span class="n">prod3</span> <span class="o">*</span> <span class="n">prod2</span>
+                <span class="n">sum_term</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">a_coordinates</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">a</span> <span class="o">!=</span> <span class="n">z0</span> <span class="ow">and</span> <span class="n">a</span> <span class="o">!=</span> <span class="n">z1</span><span class="p">:</span>
+                        <span class="n">sum_term</span> <span class="o">+=</span> <span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">b_coordinates</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">b</span> <span class="o">!=</span> <span class="n">z0</span> <span class="ow">and</span> <span class="n">b</span> <span class="o">!=</span> <span class="n">z1</span><span class="p">:</span>
+                        <span class="n">sum_term</span> <span class="o">+=</span> <span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+                <span class="n">u_prime</span> <span class="o">-=</span> <span class="p">(</span><span class="n">prod1</span> <span class="o">*</span> <span class="n">prod2</span> <span class="o">*</span> <span class="n">sum_term</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+                <span class="n">f2</span><span class="o">=</span><span class="n">v</span><span class="o">*</span><span class="n">u_prime</span>
+                <span class="k">return</span> <span class="n">f2</span>
+            <span class="n">integral_part</span> <span class="o">=</span> <span class="n">f1</span><span class="p">(</span><span class="n">z1</span><span class="p">)</span><span class="o">-</span><span class="n">f1</span><span class="p">(</span><span class="n">z0</span><span class="p">)</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">z</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">t</span> <span class="o">*</span> <span class="p">(</span><span class="n">z1</span> <span class="o">-</span> <span class="n">z0</span><span class="p">)</span> <span class="o">+</span> <span class="n">z0</span>  <span class="c1"># Parametrizzazione del segmento</span>
+
+            <span class="n">real_part</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">f2</span><span class="p">(</span><span class="n">z</span><span class="p">(</span><span class="n">t</span><span class="p">))</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">imag_part</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">f2</span><span class="p">(</span><span class="n">z</span><span class="p">(</span><span class="n">t</span><span class="p">))</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">numerical_part</span> <span class="o">=</span> <span class="n">real_part</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">imag_part</span>
+            <span class="k">return</span> <span class="n">integral_part</span> <span class="o">-</span> <span class="p">(</span><span class="n">z1</span><span class="o">-</span><span class="n">z0</span><span class="p">)</span><span class="o">*</span><span class="n">numerical_part</span>   
+                        
+        <span class="n">ap</span><span class="o">=</span><span class="p">[]</span> <span class="c1">#nuove coordinate di a dopo il conformal mapping</span>
+        <span class="n">bp</span><span class="o">=</span><span class="p">[]</span> <span class="c1">#nuove coordinate di b dopo il conformal mapping</span>
+        <span class="n">ap</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">complex</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="c1">#il primo resta zero perché è l&#39;origine</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">integral_by_part</span><span class="p">(</span><span class="n">a_coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">b_coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">bp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">b_coordinates</span><span class="p">)):</span>
+            <span class="n">val</span> <span class="o">+=</span><span class="n">integral_by_part</span><span class="p">(</span> <span class="n">b_coordinates</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">a_coordinates</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">ap</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+            <span class="n">val</span> <span class="o">+=</span> <span class="n">integral_by_part</span><span class="p">(</span> <span class="n">a_coordinates</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">b_coordinates</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">bp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ap</span><span class="p">,</span><span class="n">bp</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_c</span><span class="p">(</span><span class="n">a_coordinates</span><span class="p">,</span><span class="n">b_coordinates</span><span class="p">,</span> <span class="n">metal_i</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">c_solve</span><span class="p">(</span><span class="n">c_coordinates</span><span class="p">):</span> <span class="c1">#c_coordinates are real number</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">integral_by_part</span><span class="p">(</span><span class="n">z0</span><span class="p">,</span><span class="n">z1</span><span class="p">):</span>
+                <span class="k">def</span><span class="w"> </span><span class="nf">f1</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+                    <span class="n">u</span><span class="o">=</span><span class="mi">1</span>
+                    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">c_coordinates</span><span class="p">:</span>
+                        <span class="n">u</span><span class="o">=</span><span class="n">u</span><span class="o">*</span><span class="p">(</span><span class="n">z</span><span class="o">-</span><span class="nb">complex</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
+                    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">a_coordinates</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">a</span><span class="o">!=</span><span class="n">z0</span> <span class="ow">and</span> <span class="n">a</span><span class="o">!=</span><span class="n">z1</span><span class="p">:</span>
+                            <span class="n">u</span><span class="o">=</span><span class="n">u</span><span class="o">*</span><span class="p">(</span><span class="n">z</span><span class="o">-</span><span class="n">a</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">b_coordinates</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">b</span><span class="o">!=</span><span class="n">z0</span> <span class="ow">and</span> <span class="n">b</span><span class="o">!=</span><span class="n">z1</span><span class="p">:</span>
+                            <span class="n">u</span><span class="o">=</span><span class="n">u</span><span class="o">*</span><span class="p">(</span><span class="n">z</span><span class="o">-</span><span class="n">b</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+                    <span class="n">v</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">z</span><span class="o">-</span><span class="p">((</span><span class="n">z0</span><span class="o">+</span><span class="n">z1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="p">(</span><span class="n">z</span><span class="o">-</span><span class="n">z0</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">z</span><span class="o">-</span><span class="n">z1</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span>
+                    <span class="n">f1</span><span class="o">=</span><span class="n">u</span><span class="o">*</span><span class="n">v</span>
+                    <span class="k">return</span> <span class="n">f1</span>
+                
+                <span class="k">def</span><span class="w"> </span><span class="nf">f2</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+                    <span class="n">v</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">z</span><span class="o">-</span><span class="p">((</span><span class="n">z0</span><span class="o">+</span><span class="n">z1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="p">(</span><span class="n">z</span><span class="o">-</span><span class="n">z0</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">z</span><span class="o">-</span><span class="n">z1</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span>
+                    <span class="n">prod1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="n">z</span> <span class="o">-</span> <span class="nb">complex</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">c_coordinates</span><span class="p">])</span>
+                    <span class="n">prod2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">([(</span><span class="n">z</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">a_coordinates</span> <span class="k">if</span> <span class="n">a</span> <span class="o">!=</span> <span class="n">z0</span> <span class="ow">and</span> <span class="n">a</span> <span class="o">!=</span> <span class="n">z1</span><span class="p">])</span> \
+                        <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">([(</span><span class="n">z</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">b_coordinates</span> <span class="k">if</span> <span class="n">b</span> <span class="o">!=</span> <span class="n">z0</span> <span class="ow">and</span> <span class="n">b</span> <span class="o">!=</span> <span class="n">z1</span><span class="p">])</span>
+                    <span class="n">u_prime</span><span class="o">=</span><span class="mi">0</span>
+                    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">c_coordinates</span><span class="p">:</span>
+                        <span class="n">prod3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="n">z</span> <span class="o">-</span> <span class="nb">complex</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">c_coordinates</span> <span class="k">if</span> <span class="n">d</span> <span class="o">!=</span> <span class="n">c</span><span class="p">])</span>
+                        <span class="n">u_prime</span> <span class="o">+=</span> <span class="n">prod3</span> <span class="o">*</span> <span class="n">prod2</span>
+                    <span class="n">sum_term</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">a_coordinates</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">a</span> <span class="o">!=</span> <span class="n">z0</span> <span class="ow">and</span> <span class="n">a</span> <span class="o">!=</span> <span class="n">z1</span><span class="p">:</span>
+                            <span class="n">sum_term</span> <span class="o">+=</span> <span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">b_coordinates</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">b</span> <span class="o">!=</span> <span class="n">z0</span> <span class="ow">and</span> <span class="n">b</span> <span class="o">!=</span> <span class="n">z1</span><span class="p">:</span>
+                            <span class="n">sum_term</span> <span class="o">+=</span> <span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+                    <span class="n">u_prime</span> <span class="o">-=</span> <span class="p">(</span><span class="n">prod1</span> <span class="o">*</span> <span class="n">prod2</span> <span class="o">*</span> <span class="n">sum_term</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+                    <span class="n">f2</span><span class="o">=</span><span class="n">v</span><span class="o">*</span><span class="n">u_prime</span>
+                    <span class="k">return</span> <span class="n">f2</span>
+                
+                <span class="n">integral_part</span> <span class="o">=</span> <span class="n">f1</span><span class="p">(</span><span class="n">z1</span><span class="p">)</span><span class="o">-</span><span class="n">f1</span><span class="p">(</span><span class="n">z0</span><span class="p">)</span>
+                <span class="k">def</span><span class="w"> </span><span class="nf">z</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">t</span> <span class="o">*</span> <span class="p">(</span><span class="n">z1</span> <span class="o">-</span> <span class="n">z0</span><span class="p">)</span> <span class="o">+</span> <span class="n">z0</span>  <span class="c1"># Parametrizzazione del segmento</span>
+
+                <span class="n">real_part</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">f2</span><span class="p">(</span><span class="n">z</span><span class="p">(</span><span class="n">t</span><span class="p">))</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">imag_part</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">f2</span><span class="p">(</span><span class="n">z</span><span class="p">(</span><span class="n">t</span><span class="p">))</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+                <span class="n">numerical_part</span> <span class="o">=</span> <span class="n">real_part</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">imag_part</span>
+                <span class="k">return</span> <span class="n">integral_part</span> <span class="o">-</span> <span class="p">(</span><span class="n">z1</span><span class="o">-</span><span class="n">z0</span><span class="p">)</span><span class="o">*</span><span class="n">numerical_part</span>
+            
+            <span class="n">constraints</span><span class="o">=</span><span class="p">[]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a_coordinates</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">j</span><span class="o">!=</span><span class="n">metal_i</span> <span class="ow">and</span> <span class="n">j</span><span class="o">!=</span><span class="p">(</span><span class="n">metal_i</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">f</span><span class="o">=</span><span class="n">integral_by_part</span><span class="p">(</span><span class="n">a_coordinates</span><span class="p">[</span><span class="n">j</span><span class="p">],</span><span class="n">b_coordinates</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+                    <span class="n">constraints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">constraints</span>
+        
+        <span class="n">c_coordinates_guest</span><span class="o">=</span><span class="p">[]</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a_coordinates</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">j</span><span class="o">!=</span><span class="n">metal_i</span> <span class="ow">and</span> <span class="n">j</span><span class="o">!=</span><span class="p">(</span><span class="n">metal_i</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">c</span><span class="o">=</span><span class="p">(</span><span class="n">b_coordinates</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">real</span><span class="o">+</span><span class="n">a_coordinates</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">real</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+                <span class="n">c_coordinates_guest</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="n">sol</span><span class="o">=</span><span class="n">root</span><span class="p">(</span><span class="n">c_solve</span><span class="p">,</span><span class="n">c_coordinates_guest</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sol</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Root finding failed: &quot;</span> <span class="o">+</span> <span class="n">sol</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+        <span class="n">c_coordinates</span><span class="o">=</span><span class="p">[</span><span class="nb">complex</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">c_coordinates</span>           
+
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">CL_matrices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39; &#39;&#39;&#39;</span>
+        <span class="n">gap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gap</span>
+        <span class="n">cpw</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cpw</span>
+        <span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">branch_point_coordinates</span><span class="p">()</span>
+        <span class="n">C</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">cpw</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">cpw</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cpw</span><span class="p">)):</span>
+            <span class="n">c</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">find_c</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+            <span class="n">ap</span><span class="p">,</span><span class="n">bp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">conformal_mapping</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cpw</span><span class="p">)):</span>
+                <span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="p">(</span><span class="n">epsilon_r</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">epsilon_0</span><span class="o">*</span><span class="p">(</span><span class="n">bp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">real</span><span class="o">-</span><span class="n">ap</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">real</span><span class="p">)</span><span class="o">/</span><span class="n">bp</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">imag</span>
+        <span class="k">if</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">L</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">C</span><span class="p">)</span><span class="o">/</span><span class="n">v</span><span class="o">**</span><span class="mi">2</span>
+
+        <span class="k">return</span> <span class="n">C</span><span class="p">,</span><span class="n">L</span>
+
+<div class="viewcode-block" id="CPW_coupler.Y">
+<a class="viewcode-back" href="../../components_folder/CPW_coupler.html#qultra.CPW_coupler.Y">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">Y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">z</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construct the complex admittance matrix of a cpw coupler</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        z : complex</span>
+<span class="sd">            Complex variable (complex frequency)</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Y_matrix: numpy array    </span>
+<span class="sd">            complex admittance matrix </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">l</span>
+        <span class="n">C</span><span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span>
+
+        <span class="n">Z_matrix_inv</span> <span class="o">=</span> <span class="n">v</span><span class="o">*</span> <span class="n">C</span>
+        <span class="n">exp_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">l</span> <span class="o">*</span> <span class="n">z</span> <span class="o">/</span> <span class="n">v</span><span class="p">)</span>
+        <span class="n">exp_mz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">l</span> <span class="o">*</span> <span class="n">z</span> <span class="o">/</span> <span class="n">v</span><span class="p">)</span>
+        <span class="n">imag_part</span> <span class="o">=</span> <span class="n">exp_z</span> <span class="o">-</span> <span class="n">exp_mz</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="n">Z_matrix_inv</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">Y_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">dim</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dim</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">dim</span><span class="p">):</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">i</span> <span class="o">//</span> <span class="mi">2</span>   <span class="c1"># indice della cella</span>
+            <span class="n">even</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">even</span><span class="p">:</span>
+                <span class="n">V_plus_k</span> <span class="o">=</span> <span class="n">exp_z</span> <span class="o">/</span> <span class="n">imag_part</span>
+                <span class="n">V_minus_k</span> <span class="o">=</span> <span class="o">-</span><span class="n">exp_mz</span> <span class="o">/</span> <span class="n">imag_part</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">V_plus_k</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="n">imag_part</span>
+                <span class="n">V_minus_k</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">imag_part</span>
+
+            <span class="c1"># V_plus and V_minus are zero everywhere except at index k</span>
+            <span class="n">I_plus</span> <span class="o">=</span> <span class="n">Z_matrix_inv</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">V_plus_k</span>
+            <span class="n">I_minus</span> <span class="o">=</span> <span class="o">-</span><span class="n">Z_matrix_inv</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">V_minus_k</span>
+
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">):</span>
+                <span class="n">Y_matrix</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">I_plus</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">I_minus</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="n">Y_matrix</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">I_plus</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">exp_mz</span> <span class="o">+</span> <span class="n">I_minus</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">exp_z</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Y_matrix</span></div>
+
+    
+    
+<div class="viewcode-block" id="CPW_coupler.inductive_energy">
+<a class="viewcode-back" href="../../components_folder/CPW_coupler.html#qultra.CPW_coupler.inductive_energy">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inductive_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">V</span><span class="p">,</span><span class="n">z</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the inductive energy stored in a CPW.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        V : complex array</span>
+<span class="sd">            Voltage at nodes.</span>
+<span class="sd">        z : complex</span>
+<span class="sd">            Complex variable (complex frequency).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        E : complex</span>
+<span class="sd">            Inductive energy stored in the CPW.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">a</span><span class="o">=</span><span class="mi">0</span>
+        <span class="n">b</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span>
+        <span class="n">L</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span>   
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">integrand</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="n">I</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">dW</span><span class="o">=</span><span class="p">(</span><span class="n">I</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">L</span> <span class="o">@</span> <span class="n">I</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">dW</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+        <span class="n">E</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="n">integrand</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="c1">#integrate by using scipy and taking the first value of the tuple</span>
+        <span class="k">return</span> <span class="n">E</span></div>
+
+    
+<div class="viewcode-block" id="CPW_coupler.current">
+<a class="viewcode-back" href="../../components_folder/CPW_coupler.html#qultra.CPW_coupler.current">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">current</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">V</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">x</span><span class="p">):</span>
+<span class="w">            </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the current in a CPW coupler given the voltage node values.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        V : complex array</span>
+<span class="sd">            Voltage at  nodes.</span>
+<span class="sd">        z : complex</span>
+<span class="sd">            Complex variable (complex frequency).</span>
+<span class="sd">        x : float</span>
+<span class="sd">            Position along the CPW coupler.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        I : complex</span>
+<span class="sd">            Calculated current at position x.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span>
+
+        <span class="n">Z_matrix_inv</span> <span class="o">=</span> <span class="n">v</span><span class="o">*</span> <span class="n">C</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="n">Z_matrix_inv</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">exp_z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">*</span><span class="n">z</span><span class="o">/</span><span class="n">v</span><span class="p">)</span>
+        <span class="n">exp_mz</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">*</span><span class="n">z</span><span class="o">/</span><span class="n">v</span><span class="p">)</span>
+        <span class="n">imag_part</span><span class="o">=</span><span class="n">exp_z</span><span class="o">-</span><span class="n">exp_mz</span>
+
+        <span class="n">V_plus</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">dim</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="n">V_minus</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">dim</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">):</span>
+            <span class="n">V_plus</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="p">(</span><span class="n">V</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="n">exp_z</span><span class="o">-</span><span class="n">V</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="n">imag_part</span>
+            <span class="n">V_minus</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="n">V</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="n">exp_mz</span><span class="o">+</span><span class="n">V</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="n">imag_part</span>
+
+        <span class="n">I_plus</span><span class="o">=</span><span class="n">Z_matrix_inv</span> <span class="o">@</span> <span class="n">V_plus</span>
+        <span class="n">I_minus</span><span class="o">=-</span><span class="n">Z_matrix_inv</span> <span class="o">@</span> <span class="n">V_minus</span>
+
+        <span class="n">I</span> <span class="o">=</span> <span class="n">I_plus</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span> <span class="o">*</span> <span class="n">z</span> <span class="o">/</span> <span class="n">v</span><span class="p">)</span> <span class="o">+</span> <span class="n">I_minus</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">z</span> <span class="o">/</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">I</span>      </div>
+</div>
+
+
+<div class="viewcode-block" id="QCircuit">
+<a class="viewcode-back" href="../../circuit.html#qultra.QCircuit">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">QCircuit</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a quantum circuit.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    netlist : list</span>
+<span class="sd">        List of component instances that define the circuit.</span>
+<span class="sd">    f_starting_point : float</span>
+<span class="sd">        The start frequency of the interval over which the circuit is analyzed.</span>
+<span class="sd">    f_end_point : float</span>
+<span class="sd">        The end frequency of the interval over which the circuit is analyzed.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    modes : list of lists of length 2</span>
+<span class="sd">        Each element is a list of two values:</span>
+<span class="sd">            - The first value represents the eigenmode frequency in GHz.</span>
+<span class="sd">            - The second value represents the eigenmode dissipation rate in MHz.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">netlist</span><span class="p">,</span> <span class="n">f_starting_point</span><span class="p">,</span><span class="n">f_end_point</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">netlist</span><span class="o">=</span><span class="n">netlist</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_starting_point</span> <span class="o">=</span> <span class="n">f_starting_point</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_end_point</span> <span class="o">=</span> <span class="n">f_end_point</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">netlist</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;There are no components in the circuit&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shorts</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Your circuit appears to be open or shorted making the analysis impossible&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Your circuit appears to be not connected making the analysis impossible&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f_starting_point</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_end_point</span><span class="p">)</span>
+        
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">shorts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39; &#39;&#39;&#39;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the circuit is shorted</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">components</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">netlist</span>
+        <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span><span class="s2">&quot;node_minus&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">comp</span><span class="o">.</span><span class="n">node_minus</span> <span class="o">==</span> <span class="n">comp</span><span class="o">.</span><span class="n">node_plus</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="s2">&quot;nodes&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="n">comp</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">and</span> <span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">==</span> <span class="n">comp</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="ow">and</span> <span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">comp</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+            
+        <span class="k">return</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    def is_connected(self):</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        Check if the circuit is connected</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">    # Collect all nodes present in the components</span>
+<span class="sd">        components=self.netlist</span>
+<span class="sd">        all_nodes = []</span>
+<span class="sd">        for comp in components:</span>
+<span class="sd">            if comp.node_minus not in all_nodes:</span>
+<span class="sd">                all_nodes.append(comp.node_minus)</span>
+<span class="sd">            if comp.node_plus not in all_nodes:</span>
+<span class="sd">                all_nodes.append(comp.node_plus)</span>
+
+<span class="sd">        # Check if ground node (0) is present</span>
+<span class="sd">        if 0 not in all_nodes:</span>
+<span class="sd">            return False  # No ground node means circuit is not connected</span>
+
+<span class="sd">        # Build adjacency list: for each node, list its connected nodes</span>
+<span class="sd">        connections = {}</span>
+<span class="sd">        for comp in components:</span>
+<span class="sd">            n1 = comp.node_minus</span>
+<span class="sd">            n2 = comp.node_plus</span>
+<span class="sd">            if n1 not in connections:</span>
+<span class="sd">                connections[n1] = []</span>
+<span class="sd">            if n2 not in connections:</span>
+<span class="sd">                connections[n2] = []</span>
+<span class="sd">            connections[n1].append(n2)</span>
+<span class="sd">            connections[n2].append(n1)</span>
+
+<span class="sd">        # Initialize lists for nodes visited and nodes to visit</span>
+<span class="sd">        visited = []</span>
+<span class="sd">        to_visit = [0]  # Start traversal from ground node (0)</span>
+
+<span class="sd">        # Perform simple depth-first search (DFS) to find reachable nodes</span>
+<span class="sd">        while to_visit:</span>
+<span class="sd">            current = to_visit.pop()  # Take a node to visit</span>
+<span class="sd">            if current not in visited:</span>
+<span class="sd">                visited.append(current)  # Mark node as visited</span>
+<span class="sd">                # Add all adjacent nodes not yet visited to to_visit list</span>
+<span class="sd">                for neighbor in connections.get(current, []):</span>
+<span class="sd">                    if neighbor not in visited:</span>
+<span class="sd">                        to_visit.append(neighbor)</span>
+
+<span class="sd">        # Check if all nodes were visited (reachable from ground)</span>
+<span class="sd">        for node in all_nodes:</span>
+<span class="sd">            if node not in visited:</span>
+<span class="sd">                return False  # Node not reachable, circuit not fully connected</span>
+
+<span class="sd">        return True  # All nodes reachable, circuit is connected</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39; &#39;&#39;&#39;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the circuit is connected</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">netlist</span>
+
+        <span class="c1"># Collect all nodes present in the components</span>
+        <span class="n">all_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="s2">&quot;node_minus&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="s2">&quot;node_plus&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">comp</span><span class="o">.</span><span class="n">node_minus</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_nodes</span><span class="p">:</span>
+                    <span class="n">all_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">node_minus</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">comp</span><span class="o">.</span><span class="n">node_plus</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_nodes</span><span class="p">:</span>
+                    <span class="n">all_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">node_plus</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="s2">&quot;nodes&quot;</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">comp</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_nodes</span><span class="p">:</span>
+                        <span class="n">all_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="c1"># Check if ground node (0) is present</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_nodes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># No ground node means circuit is not connected</span>
+
+        <span class="c1"># Build adjacency list: for each node, list its connected nodes</span>
+        <span class="n">connections</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="s2">&quot;node_minus&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="s2">&quot;node_plus&quot;</span><span class="p">):</span>
+                <span class="n">n1</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">node_minus</span>
+                <span class="n">n2</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">node_plus</span>
+                <span class="k">if</span> <span class="n">n1</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">:</span>
+                    <span class="n">connections</span><span class="p">[</span><span class="n">n1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">if</span> <span class="n">n2</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">:</span>
+                    <span class="n">connections</span><span class="p">[</span><span class="n">n2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">connections</span><span class="p">[</span><span class="n">n1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n2</span><span class="p">)</span>
+                <span class="n">connections</span><span class="p">[</span><span class="n">n2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n1</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="s2">&quot;nodes&quot;</span><span class="p">):</span>
+                <span class="n">nodes</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">nodes</span>
+                <span class="c1"># Connect nodes in pairs (assume CPW coupler connects 0-1 and 2-3)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                    <span class="n">pairs</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">pairs</span><span class="p">:</span>
+                        <span class="n">n1</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                        <span class="n">n2</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">n1</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">:</span>
+                            <span class="n">connections</span><span class="p">[</span><span class="n">n1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="k">if</span> <span class="n">n2</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">:</span>
+                            <span class="n">connections</span><span class="p">[</span><span class="n">n2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="n">connections</span><span class="p">[</span><span class="n">n1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n2</span><span class="p">)</span>
+                        <span class="n">connections</span><span class="p">[</span><span class="n">n2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n1</span><span class="p">)</span>
+
+        <span class="c1"># Initialize lists for nodes visited and nodes to visit</span>
+        <span class="n">visited</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">to_visit</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Start traversal from ground node (0)</span>
+
+        <span class="c1"># Perform simple depth-first search (DFS) to find reachable nodes</span>
+        <span class="k">while</span> <span class="n">to_visit</span><span class="p">:</span>
+            <span class="n">current</span> <span class="o">=</span> <span class="n">to_visit</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">current</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                <span class="n">visited</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">connections</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="p">[]):</span>
+                    <span class="k">if</span> <span class="n">neighbor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                        <span class="n">to_visit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">neighbor</span><span class="p">)</span>
+
+        <span class="c1"># Check if all nodes were visited (reachable from ground)</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">all_nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Node not reachable, circuit not fully connected</span>
+
+        <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># All nodes reachable, circuit is connected</span>
+
+<div class="viewcode-block" id="QCircuit.build_total_Y_matrix">
+<a class="viewcode-back" href="../../circuit.html#qultra.QCircuit.build_total_Y_matrix">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_total_Y_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds the total admittance matrix Y for the circuit,</span>
+<span class="sd">        assuming node 0 is ground and should be excluded from the final matrix.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">            z: complex </span>
+<span class="sd">                complex variable (e.g., z = jω or k + jω)</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">            Y_reduced: numpy matrix</span>
+<span class="sd">                Reduced admittance matrix (excluding ground node 0)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">components</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">netlist</span>
+        <span class="c1"># Determine the highest node number</span>
+        <span class="c1">#max_node = 0</span>
+        <span class="c1">#for comp in components:</span>
+        <span class="c1">#    max_node = max(max_node, comp.node_minus, comp.node_plus)</span>
+        <span class="n">max_node</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="s2">&quot;node_minus&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="s2">&quot;node_plus&quot;</span><span class="p">):</span>
+                <span class="n">max_node</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_node</span><span class="p">,</span> <span class="n">comp</span><span class="o">.</span><span class="n">node_minus</span><span class="p">,</span> <span class="n">comp</span><span class="o">.</span><span class="n">node_plus</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="s2">&quot;nodes&quot;</span><span class="p">):</span>
+                <span class="n">max_node</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_node</span><span class="p">,</span> <span class="o">*</span><span class="n">comp</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+
+
+        <span class="n">N_total</span> <span class="o">=</span> <span class="n">max_node</span><span class="o">+</span><span class="mi">1</span>  <span class="c1"># total number of nodes including ground</span>
+        <span class="n">Y_total</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N_total</span><span class="p">,</span> <span class="n">N_total</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="s2">&quot;node_minus&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="s2">&quot;node_plus&quot;</span><span class="p">):</span>
+                <span class="n">n1</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">node_minus</span>
+                <span class="n">n2</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">node_plus</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;&quot;</span>
+<span class="sd">            # Get admittance or local Y matrix</span>
+<span class="sd">            if isinstance(comp, C):</span>
+<span class="sd">                Y = comp.C_admittance(z)</span>
+<span class="sd">            elif isinstance(comp, L):</span>
+<span class="sd">                Y = comp.L_admittance(z)</span>
+<span class="sd">            elif isinstance(comp, R):</span>
+<span class="sd">                Y = comp.R_admittance()</span>
+<span class="sd">            elif isinstance(comp, J):</span>
+<span class="sd">                Y = comp.J_admittance(z)</span>
+<span class="sd">            elif isinstance(comp, CPW):</span>
+<span class="sd">                Y_local = comp.CPW_admittance_matrix(z)</span>
+<span class="sd">                Y_total[n1, n1] += Y_local[0, 0]</span>
+<span class="sd">                Y_total[n1, n2] += Y_local[0, 1]</span>
+<span class="sd">                Y_total[n2, n1] += Y_local[1, 0]</span>
+<span class="sd">                Y_total[n2, n2] += Y_local[1, 1]</span>
+<span class="sd">                continue</span>
+<span class="sd">            else:</span>
+<span class="sd">                raise TypeError(f&quot;Unsupported component type: {type(comp)}&quot;)</span>
+
+<span class="sd">            # Fill the global Y matrix (only for scalar admittances)</span>
+<span class="sd">            if n1 != n2:</span>
+<span class="sd">                Y_total[n1, n1] += Y</span>
+<span class="sd">                Y_total[n2, n2] += Y</span>
+<span class="sd">                Y_total[n1, n2] -= Y</span>
+<span class="sd">                Y_total[n2, n1] -= Y</span>
+<span class="sd">            else:</span>
+<span class="sd">                Y_total[n1, n1] += Y</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="s2">&quot;admittance_matrix&quot;</span><span class="p">):</span>
+                <span class="n">Y_matrix</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">admittance_matrix</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+                <span class="n">Y_total</span><span class="p">[</span><span class="n">n1</span><span class="p">,</span> <span class="n">n1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">Y_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="n">Y_total</span><span class="p">[</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">Y_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">Y_total</span><span class="p">[</span><span class="n">n2</span><span class="p">,</span> <span class="n">n1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">Y_matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="n">Y_total</span><span class="p">[</span><span class="n">n2</span><span class="p">,</span> <span class="n">n2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">Y_matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="s2">&quot;admittance&quot;</span><span class="p">):</span>
+                <span class="n">Y</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">admittance</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+                
+                <span class="n">Y_total</span><span class="p">[</span><span class="n">n1</span><span class="p">,</span> <span class="n">n1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">Y</span>
+                <span class="n">Y_total</span><span class="p">[</span><span class="n">n2</span><span class="p">,</span> <span class="n">n2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">Y</span>
+                <span class="n">Y_total</span><span class="p">[</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">]</span> <span class="o">-=</span> <span class="n">Y</span>
+                <span class="n">Y_total</span><span class="p">[</span><span class="n">n2</span><span class="p">,</span> <span class="n">n1</span><span class="p">]</span> <span class="o">-=</span> <span class="n">Y</span>
+            
+            
+            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span><span class="s2">&quot;Y&quot;</span><span class="p">):</span>
+                <span class="n">Y_matrix</span><span class="o">=</span><span class="n">comp</span><span class="o">.</span><span class="n">Y</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+                <span class="n">n</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+                        <span class="n">Y_total</span><span class="p">[</span><span class="n">comp</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">comp</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span><span class="o">+=</span><span class="n">Y_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span>
+
+                
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Component </span><span class="si">{</span><span class="n">comp</span><span class="si">}</span><span class="s2"> has no admittance method or admittance matrix object&quot;</span><span class="p">)</span>
+        <span class="c1"># Remove row and column corresponding to ground node (node 0)</span>
+        <span class="n">Y_reduced</span> <span class="o">=</span> <span class="n">Y_total</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="c1">#to eliminate ground row and coulomn</span>
+       
+        <span class="k">return</span> <span class="n">Y_reduced</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">characteristic_polynomial_reduced</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">z</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39; &#39;&#39;&#39;</span>
+        <span class="n">nodes_to_delete</span><span class="o">=</span><span class="p">[]</span>
+        <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">netlist</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span><span class="n">R</span><span class="p">):</span>
+                <span class="n">nodes_to_delete</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">node_minus</span><span class="p">,</span><span class="n">comp</span><span class="o">.</span><span class="n">node_plus</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">Y_matrix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">build_total_Y_matrix</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+        <span class="n">Y_matrix</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">Y_matrix</span><span class="p">,</span> <span class="n">nodes_to_delete</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">Y_matrix</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">Y_matrix</span><span class="p">,</span> <span class="n">nodes_to_delete</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">det_Y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">Y_matrix</span><span class="p">)</span>
+
+        <span class="n">K</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">null_space</span><span class="p">(</span><span class="n">Y_matrix</span><span class="p">,</span><span class="n">rcond</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
+        <span class="n">dim_kernel</span> <span class="o">=</span> <span class="n">K</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        
+        <span class="k">return</span> <span class="n">det_Y</span><span class="p">,</span> <span class="n">Y_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dim_kernel</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    def check_singularities(self, nodes_to_delete):</span>
+<span class="sd">        ranks = []</span>
+<span class="sd">        f_list = np.arange(1, 2.1, 0.1)</span>
+<span class="sd">        n= None</span>
+<span class="sd">        for f in f_list:</span>
+<span class="sd">            Y_matrix = self.build_total_Y_matrix(2j*np.pi*1e9*f)</span>
+<span class="sd">            Y_matrix=np.delete(Y_matrix, nodes_to_delete, axis=0)</span>
+<span class="sd">            Y_matrix=np.delete(Y_matrix, nodes_to_delete, axis=1)</span>
+
+<span class="sd">            if not np.isfinite(Y_matrix).all():</span>
+<span class="sd">                return True</span>
+<span class="sd">            if n is None:</span>
+<span class="sd">                n = Y_matrix.shape[0]  # Salvo la dimensione la prima volta</span>
+
+<span class="sd">            rank = np.linalg.matrix_rank(Y_matrix)</span>
+<span class="sd">            print(rank)</span>
+<span class="sd">            print(np.linalg.det(Y_matrix))</span>
+<span class="sd">            if rank==n:</span>
+<span class="sd">                return False</span>
+<span class="sd">        return True</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">characteristic_polynomial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">z</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39; &#39;&#39;&#39;</span>
+        <span class="n">Y_matrix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">build_total_Y_matrix</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+        <span class="n">det_Y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">Y_matrix</span><span class="p">)</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">null_space</span><span class="p">(</span><span class="n">Y_matrix</span><span class="p">,</span><span class="n">rcond</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
+        <span class="n">dim_kernel</span> <span class="o">=</span> <span class="n">K</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">det_Y</span><span class="p">,</span> <span class="n">Y_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">dim_kernel</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">there_is_R</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39; &#39;&#39;&#39;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if there are resistive components</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">netlist</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            
+        <span class="k">return</span> <span class="kc">False</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">eigenvalues</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">f_starting_point</span><span class="p">,</span> <span class="n">f_end_point</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39; &#39;&#39;&#39;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find the eigenfrequencies (modes) of the circuit</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">f_starting_point</span> <span class="o">&gt;=</span> <span class="n">f_end_point</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;f_starting_point must be &lt; f_end_point&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">f_starting_point</span><span class="o">&lt;</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">f_end_point</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span>
+             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;frequencies must be positive&quot;</span><span class="p">)</span>
+    
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">there_is_R</span><span class="p">():</span>
+            <span class="n">guesses</span><span class="o">=</span><span class="n">zero_algo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">characteristic_polynomial_reduced</span><span class="p">,</span><span class="n">f_starting_point</span><span class="p">,</span> <span class="n">f_end_point</span><span class="p">)</span>
+            <span class="n">modes</span><span class="o">=</span><span class="n">zero_algo_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">characteristic_polynomial</span><span class="p">,</span> <span class="n">guesses</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">modes</span><span class="o">=</span><span class="n">zero_algo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">characteristic_polynomial</span><span class="p">,</span> <span class="n">f_starting_point</span><span class="p">,</span> <span class="n">f_end_point</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">modes</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">eigenvectors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39; &#39;&#39;&#39;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the eigenvectors (null space) of the total admittance matrix</span>
+<span class="sd">        at each eigenfrequency found in the range.</span>
+
+<span class="sd">        Handles two cases:</span>
+<span class="sd">        - Real eigenvalues (jω): eigenvalue is scalar</span>
+<span class="sd">        - Complex eigenvalues (k + jω): eigenvalue is a tuple/list of length 2</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of null space vectors (eigenvectors) for each mode.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#circuit_eigenvalues=self.eigenvalues(f_starting_point, f_end_point)</span>
+        <span class="n">circuit_eigenvalues</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span>
+        <span class="n">circuit_eigenvectors</span><span class="o">=</span><span class="p">[]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">circuit_eigenvalues</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No eigenvalues found.&quot;</span><span class="p">)</span>
+        
+        <span class="c1">#find max node in the circuit</span>
+        <span class="c1">#max_node = max(max(comp.node_plus, comp.node_minus) for comp in self.netlist)</span>
+        <span class="n">components</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">netlist</span>
+        <span class="n">max_node</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="s2">&quot;node_minus&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="s2">&quot;node_plus&quot;</span><span class="p">):</span>
+                <span class="n">max_node</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_node</span><span class="p">,</span> <span class="n">comp</span><span class="o">.</span><span class="n">node_minus</span><span class="p">,</span> <span class="n">comp</span><span class="o">.</span><span class="n">node_plus</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="s2">&quot;nodes&quot;</span><span class="p">):</span>
+                <span class="n">max_node</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_node</span><span class="p">,</span> <span class="o">*</span><span class="n">comp</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+       <span class="c1"># print(max_node)</span>
+        
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">circuit_eigenvalues</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">eigen</span> <span class="ow">in</span> <span class="n">circuit_eigenvalues</span><span class="p">:</span>
+                <span class="n">Y_f0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">build_total_Y_matrix</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mf">1e9</span><span class="o">*</span><span class="n">eigen</span><span class="p">)</span>
+                
+                <span class="k">if</span> <span class="n">max_node</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="n">full_vec</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+
+                    <span class="n">null_vecs</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">null_space</span><span class="p">(</span><span class="n">Y_f0</span><span class="p">,</span><span class="n">rcond</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span> <span class="c1">#if it doesn&#39;t find the kernell, increase the tollerance rcond=1e-10</span>
+                    <span class="n">full_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">max_node</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span> <span class="c1">#extent with ground value</span>
+                    <span class="n">full_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">null_vecs</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+                <span class="n">circuit_eigenvectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">full_vec</span><span class="p">)</span>
+        
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">circuit_eigenvalues</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">circuit_eigenvalues</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">circuit_eigenvalues</span><span class="p">:</span>
+                <span class="n">z</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">1e6</span> <span class="o">*</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">1e9</span> <span class="o">*</span> <span class="n">f</span>
+                <span class="n">Y_z0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">build_total_Y_matrix</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">max_node</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="n">full_vec</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">null_vecs</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">null_space</span><span class="p">(</span><span class="n">Y_z0</span><span class="p">,</span><span class="n">rcond</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span> <span class="c1">#if it doesn&#39;t find the kernell, increase the tollerance</span>
+                    <span class="c1">#da trattare il caso degenre??</span>
+                    <span class="n">full_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">max_node</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span> <span class="c1">#extent with ground value</span>
+                    <span class="n">full_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">null_vecs</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+                <span class="n">circuit_eigenvectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">full_vec</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Eigenvalue format not recognized.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">circuit_eigenvectors</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">complex_frequencies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39; &#39;&#39;&#39;</span>
+        <span class="n">complex_f</span><span class="o">=</span><span class="p">[]</span>
+        <span class="c1">#circuit_eigenvalues=self.eigenvalues(f_starting_point, f_end_point)</span>
+        <span class="n">circuit_eigenvalues</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span>
+        <span class="k">for</span> <span class="n">eigen</span> <span class="ow">in</span> <span class="n">circuit_eigenvalues</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">eigen</span><span class="p">,</span><span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+                <span class="n">complex_f</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mf">1e9</span><span class="o">*</span><span class="n">eigen</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">eigen</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">eigen</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">complex_f</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mf">1e6</span><span class="o">*</span><span class="n">eigen</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mf">1e9</span><span class="o">*</span><span class="n">eigen</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Eigenvalue format not recognized.&quot;</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">complex_f</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">total_inductive_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39; &#39;&#39;&#39;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the total inductive energy stored into the circuit</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">circuit_eigenvalues</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">complex_frequencies</span><span class="p">()</span>
+        <span class="n">eigenvectors_with_ground</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eigenvectors</span><span class="p">()</span>
+        <span class="n">E_inductive</span><span class="o">=</span><span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">circuit_eigenvalues</span><span class="p">)):</span>
+            <span class="n">E_tot</span><span class="o">=</span><span class="mi">0</span>
+            <span class="n">complex_f</span><span class="o">=</span><span class="n">circuit_eigenvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">eigenvectors</span><span class="o">=</span><span class="n">eigenvectors_with_ground</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">netlist</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="n">J</span><span class="p">):</span>
+                    <span class="n">current</span><span class="o">=</span><span class="n">comp</span><span class="o">.</span><span class="n">admittance</span><span class="p">(</span><span class="n">complex_f</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">eigenvectors</span><span class="p">[</span><span class="n">comp</span><span class="o">.</span><span class="n">node_plus</span><span class="p">]</span><span class="o">-</span><span class="n">eigenvectors</span><span class="p">[</span><span class="n">comp</span><span class="o">.</span><span class="n">node_minus</span><span class="p">])</span>
+                    <span class="n">E_tot</span><span class="o">+=</span><span class="n">comp</span><span class="o">.</span><span class="n">J_value</span><span class="o">*</span><span class="nb">abs</span><span class="p">(</span><span class="n">current</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">2</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="n">L</span><span class="p">):</span>
+                    <span class="n">current</span><span class="o">=</span><span class="n">comp</span><span class="o">.</span><span class="n">admittance</span><span class="p">(</span><span class="n">complex_f</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">eigenvectors</span><span class="p">[</span><span class="n">comp</span><span class="o">.</span><span class="n">node_plus</span><span class="p">]</span><span class="o">-</span><span class="n">eigenvectors</span><span class="p">[</span><span class="n">comp</span><span class="o">.</span><span class="n">node_minus</span><span class="p">])</span>
+                    <span class="n">E_tot</span><span class="o">+=</span><span class="n">comp</span><span class="o">.</span><span class="n">L_value</span><span class="o">*</span><span class="nb">abs</span><span class="p">(</span><span class="n">current</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">2</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span><span class="n">CPW</span><span class="p">):</span>
+                    <span class="c1">#da verificare se è giusto !!!!!</span>
+                    <span class="n">E_tot</span><span class="o">+=</span><span class="n">comp</span><span class="o">.</span><span class="n">inductive_energy</span><span class="p">(</span><span class="n">eigenvectors</span><span class="p">[</span><span class="n">comp</span><span class="o">.</span><span class="n">node_plus</span><span class="p">],</span><span class="n">eigenvectors</span><span class="p">[</span><span class="n">comp</span><span class="o">.</span><span class="n">node_minus</span><span class="p">],</span><span class="n">complex_f</span><span class="p">)</span>
+                    <span class="c1">#print(&#39;E cpw&#39;,comp.inductive_energy(eigenvectors[comp.node_plus],eigenvectors[comp.node_minus],complex_f))</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="n">CPW_coupler</span><span class="p">):</span>
+                    <span class="n">V</span><span class="o">=</span><span class="p">[</span><span class="n">eigenvectors</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">comp</span><span class="o">.</span><span class="n">nodes</span><span class="p">]</span>
+                    <span class="n">E_tot</span><span class="o">+=</span><span class="n">comp</span><span class="o">.</span><span class="n">inductive_energy</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">complex_f</span><span class="p">)</span>
+                    <span class="c1">#print(&#39;E coupler&#39;,comp.inductive_energy(V,complex_f))</span>
+            
+            <span class="n">E_inductive</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">E_tot</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">E_inductive</span>
+
+
+
+<div class="viewcode-block" id="QCircuit.run_epr">
+<a class="viewcode-back" href="../../circuit.html#qultra.QCircuit.run_epr">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_epr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">       Compute the Cross-Kerr matrix using the energy participation ratio method.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        chi: numpy.ndarray</span>
+<span class="sd">            The Cross-Kerr matrix of the system [MHz].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">circuit_eigenvalues</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">complex_frequencies</span><span class="p">()</span>
+        <span class="n">f</span><span class="o">=</span><span class="p">[</span><span class="n">z</span><span class="o">.</span><span class="n">imag</span><span class="o">/</span><span class="mi">2</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">circuit_eigenvalues</span><span class="p">]</span>
+        <span class="n">eigenvectors_with_ground</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eigenvectors</span><span class="p">()</span>
+        <span class="n">comp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">netlist</span>
+        <span class="n">N_junct</span><span class="o">=</span><span class="mi">0</span> <span class="c1">#number of junction in the netlist</span>
+        <span class="n">junction_index</span><span class="o">=</span><span class="p">[]</span> <span class="c1">#index of the junction elements in the netlist</span>
+
+        <span class="c1">#find junction</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">netlist</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">netlist</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">J</span><span class="p">):</span>
+                <span class="n">N_junct</span><span class="o">+=</span><span class="mi">1</span>
+                <span class="n">junction_index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">N_junct</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No junctions in the circuit&#39;</span><span class="p">)</span>
+
+        <span class="n">p</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">circuit_eigenvalues</span><span class="p">),</span><span class="n">N_junct</span><span class="p">))</span> <span class="c1">#energy participation coefficients matrix</span>
+        <span class="n">E_tot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">total_inductive_energy</span><span class="p">()</span>
+
+        <span class="c1">#calculate energy participatio ratio matrix</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">circuit_eigenvalues</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_junct</span><span class="p">):</span>
+                <span class="n">eigenvectors</span><span class="o">=</span><span class="n">eigenvectors_with_ground</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">current</span><span class="o">=</span><span class="n">comp</span><span class="p">[</span><span class="n">junction_index</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span><span class="o">.</span><span class="n">admittance</span><span class="p">(</span><span class="n">circuit_eigenvalues</span><span class="p">[</span><span class="n">m</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">eigenvectors</span><span class="p">[</span><span class="n">comp</span><span class="p">[</span><span class="n">junction_index</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span><span class="o">.</span><span class="n">node_plus</span><span class="p">]</span><span class="o">-</span><span class="n">eigenvectors</span><span class="p">[</span><span class="n">comp</span><span class="p">[</span><span class="n">junction_index</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span><span class="o">.</span><span class="n">node_minus</span><span class="p">])</span>
+                <span class="n">Ej</span><span class="o">=</span><span class="n">comp</span><span class="p">[</span><span class="n">junction_index</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span><span class="o">.</span><span class="n">J_value</span><span class="o">*</span><span class="nb">abs</span><span class="p">(</span><span class="n">current</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">2</span>
+                <span class="n">p_mj</span><span class="o">=</span><span class="n">Ej</span><span class="o">/</span><span class="n">E_tot</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">p</span><span class="p">[</span><span class="n">m</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="n">p_mj</span>
+
+        <span class="c1">#calculate cross-kerr and self-kerr in matrix form</span>
+        <span class="n">chi</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">circuit_eigenvalues</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">circuit_eigenvalues</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">circuit_eigenvalues</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">circuit_eigenvalues</span><span class="p">)):</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_junct</span><span class="p">):</span>
+                    <span class="n">chi</span><span class="p">[</span><span class="n">m</span><span class="p">,</span><span class="n">n</span><span class="p">]</span><span class="o">+=</span><span class="mf">0.25</span><span class="o">*</span><span class="n">f</span><span class="p">[</span><span class="n">m</span><span class="p">]</span><span class="o">*</span><span class="n">f</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">*</span><span class="n">p</span><span class="p">[</span><span class="n">m</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="n">p</span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">/</span><span class="n">comp</span><span class="p">[</span><span class="n">junction_index</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span><span class="o">.</span><span class="n">Ej</span><span class="p">()</span><span class="o">/</span><span class="n">comp</span><span class="p">[</span><span class="n">junction_index</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span><span class="o">.</span><span class="n">N</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mf">1e6</span>  <span class="c1">#MHZ </span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">circuit_eigenvalues</span><span class="p">)):</span>
+            <span class="n">chi</span><span class="p">[</span><span class="n">m</span><span class="p">,</span><span class="n">m</span><span class="p">]</span><span class="o">=</span><span class="n">chi</span><span class="p">[</span><span class="n">m</span><span class="p">,</span><span class="n">m</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
+        
+        <span class="k">return</span> <span class="n">chi</span></div>
+
+
+<div class="viewcode-block" id="QCircuit.mode_frequencies">
+<a class="viewcode-back" href="../../circuit.html#qultra.QCircuit.mode_frequencies">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mode_frequencies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the frequencies of the modes of the circuit [GHz]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        frequencies: list</span>
+<span class="sd">            Mode frequencies in GHz.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#eigen=self.eigenvalues(f_starting_point, f_end_point)</span>
+        <span class="n">eigen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span>
+        <span class="n">frequencies</span><span class="o">=</span><span class="p">[]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">eigen</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">eigen</span><span class="p">:</span>
+                <span class="n">frequencies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">eigen</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">eigen</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">eigen</span><span class="p">:</span>
+                <span class="n">frequencies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">frequencies</span></div>
+
+
+<div class="viewcode-block" id="QCircuit.kappa">
+<a class="viewcode-back" href="../../circuit.html#qultra.QCircuit.kappa">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kappa</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the kappa of the modes of the circuit [MHz]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        kappa: list</span>
+<span class="sd">            Mode dissipation rates in MHz.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#eigen=self.eigenvalues(f_starting_point, f_end_point)</span>
+        <span class="n">eigen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span>
+        <span class="n">kappa</span><span class="o">=</span><span class="p">[]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">eigen</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">eigen</span><span class="p">:</span>
+                <span class="n">kappa</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">eigen</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">eigen</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">eigen</span><span class="p">:</span>
+                <span class="n">kappa</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">kappa</span></div>
+
+       
+<div class="viewcode-block" id="QCircuit.show_modes">
+<a class="viewcode-back" href="../../circuit.html#qultra.QCircuit.show_modes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_modes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to visualize the modes of the circuit</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#eigen=self.eigenvalues(f_starting_point, f_end_point)</span>
+        <span class="n">eigen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span>
+        <span class="n">table</span><span class="o">=</span><span class="p">[]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">eigen</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">eigen</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">freq</span><span class="o">=</span><span class="n">val</span> <span class="c1">#GHz</span>
+                <span class="n">k</span><span class="o">=</span><span class="mi">0</span> <span class="c1">#Mhz</span>
+                <span class="n">table</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">freq</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Mode&quot;</span><span class="p">,</span> <span class="s2">&quot;Freq [GHz]&quot;</span><span class="p">,</span> <span class="s2">&quot;k [MHz]&quot;</span><span class="p">],</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;pretty&quot;</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">eigen</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">eigen</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">eigen</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">freq</span><span class="o">=</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1">#GHz</span>
+                <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c1">#Mhz</span>
+                <span class="n">Q</span><span class="o">=</span><span class="n">freq</span><span class="o">*</span><span class="mf">1e9</span><span class="o">/</span><span class="n">k</span><span class="o">/</span><span class="mf">1e6</span>
+                <span class="n">table</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">freq</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">Q</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Mode&quot;</span><span class="p">,</span> <span class="s2">&quot;Freq [GHz]&quot;</span><span class="p">,</span> <span class="s2">&quot;k [MHz]&quot;</span><span class="p">,</span><span class="s2">&quot;Q&quot;</span><span class="p">],</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;pretty&quot;</span><span class="p">))</span>
+            <span class="k">return</span></div>
+
+        
+<div class="viewcode-block" id="QCircuit.show_chi">
+<a class="viewcode-back" href="../../circuit.html#qultra.QCircuit.show_chi">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_chi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to visualize the Cross-Kerr matrix</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">chi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_epr</span><span class="p">()</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">chi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Mode&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+                <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">chi</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Chi matrix [MHz]:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;pretty&quot;</span><span class="p">))</span>
+        <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="QCircuit.show_all">
+<a class="viewcode-back" href="../../circuit.html#qultra.QCircuit.show_all">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show all the key parameter of the circuit</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_modes</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_chi</span><span class="p">()</span>
+        <span class="k">return</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_Z_submatrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">port</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="n">z</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mf">1e6</span><span class="o">*</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mf">1e9</span><span class="o">*</span><span class="n">f</span>
+        <span class="n">Y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">build_total_Y_matrix</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+        <span class="n">Z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
+        <span class="n">Z_submatrix</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">port</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">port</span><span class="p">)),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">port</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">port</span><span class="p">)):</span>
+                <span class="n">Z_submatrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="n">Z</span><span class="p">[</span><span class="n">port</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">port</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">Z_submatrix</span></div>
+
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Simona Zaccaria, Antonio Gnudi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
