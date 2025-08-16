@@ -1,0 +1,729 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Qubit Coupled to a resonator &mdash; QuLTRA v0.1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5e3f2911"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Josepshon Junction array" href="JJ_array.html" />
+    <link rel="prev" title="Basic use of the package" href="Basics.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            QuLTRA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../Tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Basics.html">Basic use of the package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Qubit Coupled to a resonator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="JJ_array.html">Josepshon Junction array</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Exploiting_higher_modes.html">Exploiting higher modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Intrinsic_Purcell_filter.html">Fast multiplexed superconducting qubit readout with intrinsic Purcell filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Coupling_qubits_to_feedline.html">Coupling qubits to the feedline</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../Documentation.html">Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">QuLTRA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../Tutorials.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Qubit Coupled to a resonator</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorial/Qubit_resonator.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Qubit-Coupled-to-a-resonator">
+<h1>Qubit Coupled to a resonator<a class="headerlink" href="#Qubit-Coupled-to-a-resonator" title="Link to this heading"></a></h1>
+<p>The first structure we want to analyze is the transmon qubit coupled to a <span class="math notranslate nohighlight">\(\lambda /2\)</span> resonator, we’ll consider the structure presented <a class="reference external" href="https://qiskit-community.github.io/qiskit-metal/tut/4-Analysis/4.13-Analyze-transmon-and-resonator.html">here</a> and we’ll compare the result obtained with QuLTRA and ANSYS</p>
+<p><strong>Note</strong>: <span class="math notranslate nohighlight">\(\lambda/2\)</span> resonators have an open end. To model this aspect on QuLTRA we can both leave the node opne or terminated it on a very small capacitance</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">qiskit_metal</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">metal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_metal</span><span class="w"> </span><span class="kn">import</span> <span class="n">designs</span><span class="p">,</span> <span class="n">draw</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_metal</span><span class="w"> </span><span class="kn">import</span> <span class="n">MetalGUI</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Headings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyEPR</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">epr</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">design</span> <span class="o">=</span> <span class="n">designs</span><span class="o">.</span><span class="n">DesignPlanar</span><span class="p">({},</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">design</span><span class="o">.</span><span class="n">chips</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="s1">&#39;size_x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;2mm&#39;</span>
+<span class="n">design</span><span class="o">.</span><span class="n">chips</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="s1">&#39;size_y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;2mm&#39;</span>
+
+
+<span class="n">gui</span> <span class="o">=</span> <span class="n">MetalGUI</span><span class="p">(</span><span class="n">design</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_metal.qlibrary.qubits.transmon_pocket</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransmonPocket</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_metal.qlibrary.terminations.open_to_ground</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenToGround</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_metal.qlibrary.tlines.meandered</span><span class="w"> </span><span class="kn">import</span> <span class="n">RouteMeander</span>
+
+<span class="n">design</span><span class="o">.</span><span class="n">delete_all_components</span><span class="p">()</span>
+
+<span class="n">q1</span> <span class="o">=</span> <span class="n">TransmonPocket</span><span class="p">(</span><span class="n">design</span><span class="p">,</span> <span class="s1">&#39;Q1&#39;</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">pad_width</span> <span class="o">=</span> <span class="s1">&#39;425 um&#39;</span><span class="p">,</span>
+    <span class="n">pocket_height</span> <span class="o">=</span> <span class="s1">&#39;650um&#39;</span><span class="p">,</span>
+     <span class="n">hfss_inductance</span><span class="o">=</span><span class="s1">&#39;12.31nH&#39;</span><span class="p">,</span>
+    <span class="n">connection_pads</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+        <span class="n">readout</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">loc_W</span><span class="o">=+</span><span class="mi">1</span><span class="p">,</span><span class="n">loc_H</span><span class="o">=+</span><span class="mi">1</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="s1">&#39;200um&#39;</span><span class="p">)</span>
+    <span class="p">)))</span>
+<span class="n">otg</span> <span class="o">=</span> <span class="n">OpenToGround</span><span class="p">(</span><span class="n">design</span><span class="p">,</span> <span class="s1">&#39;open_to_ground&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">pos_x</span><span class="o">=</span><span class="s1">&#39;1.75mm&#39;</span><span class="p">,</span>  <span class="n">pos_y</span><span class="o">=</span><span class="s1">&#39;0um&#39;</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">))</span>
+<span class="n">readout</span> <span class="o">=</span> <span class="n">RouteMeander</span><span class="p">(</span><span class="n">design</span><span class="p">,</span> <span class="s1">&#39;readout&#39;</span><span class="p">,</span>  <span class="n">Dict</span><span class="p">(</span>
+            <span class="n">total_length</span><span class="o">=</span><span class="s1">&#39;6 mm&#39;</span><span class="p">,</span>
+            <span class="n">hfss_wire_bonds</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">fillet</span><span class="o">=</span><span class="s1">&#39;90 um&#39;</span><span class="p">,</span>
+            <span class="n">lead</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">start_straight</span><span class="o">=</span><span class="s1">&#39;100um&#39;</span><span class="p">),</span>
+            <span class="n">pin_inputs</span><span class="o">=</span><span class="n">Dict</span><span class="p">(</span>
+                <span class="n">start_pin</span><span class="o">=</span><span class="n">Dict</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="s1">&#39;Q1&#39;</span><span class="p">,</span> <span class="n">pin</span><span class="o">=</span><span class="s1">&#39;readout&#39;</span><span class="p">),</span>
+                <span class="n">end_pin</span><span class="o">=</span><span class="n">Dict</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="s1">&#39;open_to_ground&#39;</span><span class="p">,</span> <span class="n">pin</span><span class="o">=</span><span class="s1">&#39;open&#39;</span><span class="p">)),</span> <span class="p">))</span>
+
+<span class="n">gui</span><span class="o">.</span><span class="n">rebuild</span><span class="p">()</span>
+<span class="n">gui</span><span class="o">.</span><span class="n">autoscale</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_metal.analyses.quantization</span><span class="w"> </span><span class="kn">import</span> <span class="n">LOManalysis</span>
+<span class="n">c1</span><span class="o">=</span><span class="n">LOManalysis</span><span class="p">(</span><span class="n">design</span><span class="p">,</span> <span class="s2">&quot;q3d&quot;</span><span class="p">)</span>
+<span class="n">c1</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">components</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Q1&#39;</span><span class="p">],</span> <span class="n">open_terminations</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;Q1&#39;</span><span class="p">,</span><span class="s1">&#39;readout&#39;</span><span class="p">)])</span>
+<span class="n">c1</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">capacitance_matrix</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO 07:42PM [connect_project]: Connecting to Ansys Desktop API...
+INFO 07:42PM [load_ansys_project]:      Opened Ansys App
+INFO 07:42PM [load_ansys_project]:      Opened Ansys Desktop v2022.2.0
+INFO 07:42PM [load_ansys_project]:      Opened Ansys Project
+        Folder:    C:/Users/simona.zaccaria4/Documents/Ansoft/
+        Project:   Project38
+INFO 07:42PM [connect_design]:  Opened active design
+        Design:    Design_hfss [Solution type: Eigenmode]
+INFO 07:42PM [get_setup]:       Opened setup `Setup`  (&lt;class &#39;pyEPR.ansys.HfssEMSetup&#39;&gt;)
+INFO 07:42PM [connect]:         Connected to project &#34;Project38&#34; and design &#34;Design_hfss&#34; 😀
+
+INFO 07:42PM [connect_design]:  Opened active design
+        Design:    Design_q3d [Solution type: Q3D]
+INFO 07:42PM [get_setup]:       Opened setup `Setup`  (&lt;class &#39;pyEPR.ansys.AnsysQ3DSetup&#39;&gt;)
+INFO 07:42PM [analyze]: Analyzing setup Setup
+INFO 07:43PM [get_matrix]: Exporting matrix data to (C:\Users\SIMONA~1.ZAC\AppData\Local\Temp\tmp1lq3b2uq.txt, C, , Setup:LastAdaptive, &#34;Original&#34;, &#34;ohm&#34;, &#34;nH&#34;, &#34;fF&#34;, &#34;mSie&#34;, 5000000000, Maxwell, 1, False
+INFO 07:43PM [get_matrix]: Exporting matrix data to (C:\Users\SIMONA~1.ZAC\AppData\Local\Temp\tmp7re0czcr.txt, C, , Setup:AdaptivePass, &#34;Original&#34;, &#34;ohm&#34;, &#34;nH&#34;, &#34;fF&#34;, &#34;mSie&#34;, 5000000000, Maxwell, 1, False
+INFO 07:43PM [get_matrix]: Exporting matrix data to (C:\Users\SIMONA~1.ZAC\AppData\Local\Temp\tmpixi_h1w5.txt, C, , Setup:AdaptivePass, &#34;Original&#34;, &#34;ohm&#34;, &#34;nH&#34;, &#34;fF&#34;, &#34;mSie&#34;, 5000000000, Maxwell, 2, False
+INFO 07:43PM [get_matrix]: Exporting matrix data to (C:\Users\SIMONA~1.ZAC\AppData\Local\Temp\tmpjgt8d6lq.txt, C, , Setup:AdaptivePass, &#34;Original&#34;, &#34;ohm&#34;, &#34;nH&#34;, &#34;fF&#34;, &#34;mSie&#34;, 5000000000, Maxwell, 3, False
+INFO 07:43PM [get_matrix]: Exporting matrix data to (C:\Users\SIMONA~1.ZAC\AppData\Local\Temp\tmply4eecdr.txt, C, , Setup:AdaptivePass, &#34;Original&#34;, &#34;ohm&#34;, &#34;nH&#34;, &#34;fF&#34;, &#34;mSie&#34;, 5000000000, Maxwell, 4, False
+INFO 07:43PM [get_matrix]: Exporting matrix data to (C:\Users\SIMONA~1.ZAC\AppData\Local\Temp\tmpzoeu7eb3.txt, C, , Setup:AdaptivePass, &#34;Original&#34;, &#34;ohm&#34;, &#34;nH&#34;, &#34;fF&#34;, &#34;mSie&#34;, 5000000000, Maxwell, 5, False
+INFO 07:43PM [get_matrix]: Exporting matrix data to (C:\Users\SIMONA~1.ZAC\AppData\Local\Temp\tmpldvmpus8.txt, C, , Setup:AdaptivePass, &#34;Original&#34;, &#34;ohm&#34;, &#34;nH&#34;, &#34;fF&#34;, &#34;mSie&#34;, 5000000000, Maxwell, 6, False
+INFO 07:43PM [get_matrix]: Exporting matrix data to (C:\Users\SIMONA~1.ZAC\AppData\Local\Temp\tmpg9mvmnc1.txt, C, , Setup:AdaptivePass, &#34;Original&#34;, &#34;ohm&#34;, &#34;nH&#34;, &#34;fF&#34;, &#34;mSie&#34;, 5000000000, Maxwell, 7, False
+INFO 07:43PM [get_matrix]: Exporting matrix data to (C:\Users\SIMONA~1.ZAC\AppData\Local\Temp\tmpymvsb8b5.txt, C, , Setup:AdaptivePass, &#34;Original&#34;, &#34;ohm&#34;, &#34;nH&#34;, &#34;fF&#34;, &#34;mSie&#34;, 5000000000, Maxwell, 8, False
+INFO 07:43PM [get_matrix]: Exporting matrix data to (C:\Users\SIMONA~1.ZAC\AppData\Local\Temp\tmpkh447lai.txt, C, , Setup:AdaptivePass, &#34;Original&#34;, &#34;ohm&#34;, &#34;nH&#34;, &#34;fF&#34;, &#34;mSie&#34;, 5000000000, Maxwell, 9, False
+INFO 07:43PM [get_matrix]: Exporting matrix data to (C:\Users\SIMONA~1.ZAC\AppData\Local\Temp\tmpftdn3uin.txt, C, , Setup:AdaptivePass, &#34;Original&#34;, &#34;ohm&#34;, &#34;nH&#34;, &#34;fF&#34;, &#34;mSie&#34;, 5000000000, Maxwell, 10, False
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>ground_main_plane</th>
+      <th>pad_bot_Q1</th>
+      <th>pad_top_Q1</th>
+      <th>readout_connector_pad_Q1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>ground_main_plane</th>
+      <td>177.78538</td>
+      <td>-44.74611</td>
+      <td>-38.34722</td>
+      <td>-37.03041</td>
+    </tr>
+    <tr>
+      <th>pad_bot_Q1</th>
+      <td>-44.74611</td>
+      <td>82.84141</td>
+      <td>-32.48515</td>
+      <td>-2.30760</td>
+    </tr>
+    <tr>
+      <th>pad_top_Q1</th>
+      <td>-38.34722</td>
+      <td>-32.48515</td>
+      <td>93.38943</td>
+      <td>-19.67329</td>
+    </tr>
+    <tr>
+      <th>readout_connector_pad_Q1</th>
+      <td>-37.03041</td>
+      <td>-2.30760</td>
+      <td>-19.67329</td>
+      <td>60.14998</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">c1</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Warning! 6 COM references still alive
+Ansys will likely refuse to shut down
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">qultra</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">qu</span>
+
+<span class="n">C_pad_bot</span><span class="o">=</span><span class="p">(</span><span class="mf">82.84141</span><span class="o">-</span><span class="mf">32.48515</span><span class="o">-</span><span class="mf">2.30760</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-15</span> <span class="c1">#capacitance of the bottom pad respect to ground</span>
+<span class="n">C_pad_top</span><span class="o">=</span><span class="p">(</span><span class="mf">93.38943</span><span class="o">-</span><span class="mf">32.48515</span><span class="o">-</span><span class="mf">19.67329</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-15</span> <span class="c1">#capacitance of the top pad respect to ground</span>
+<span class="n">C_pads</span><span class="o">=</span><span class="mf">32.48515e-15</span> <span class="c1">#capacitance between the two pads</span>
+<span class="n">Cg_bot</span><span class="o">=</span><span class="mf">2.30760e-15</span> <span class="c1">#capacitance between the bottom pad and the coupling pad</span>
+<span class="n">Cg_top</span><span class="o">=</span><span class="mf">19.67329e-15</span> <span class="c1">#capacitance between the top pad and the coupling pad</span>
+<span class="n">Cg0</span><span class="o">=</span><span class="p">(</span><span class="mf">60.14998</span><span class="o">-</span><span class="mf">2.30760</span><span class="o">-</span><span class="mf">19.67329</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-15</span> <span class="c1">#capacitance between the coupling pad and ground</span>
+<span class="n">Lj</span><span class="o">=</span><span class="mf">12.31e-9</span> <span class="c1">#inductance of the Josephson junction</span>
+
+<span class="n">l</span><span class="o">=</span><span class="mf">6e-3</span> <span class="c1">#length of the CPW resonator</span>
+
+<span class="n">net</span><span class="o">=</span><span class="p">[</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">C_pad_bot</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">C_pad_top</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">C_pads</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">Cg_bot</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">Cg_top</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">Cg0</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">J</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">Lj</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">l</span><span class="p">)]</span><span class="c1">#,qu.C(4,0,1e-25)]</span>
+<span class="n">qubit_resonator</span><span class="o">=</span><span class="n">qu</span><span class="o">.</span><span class="n">QCircuit</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">qubit_resonator</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
++------+------------+----------+
+| Mode | Freq [GHz] | k [MHz]  |
++------+------------+----------+
+|  1   |  5.85e+00  | 0.00e+00 |
+|  2   |  9.34e+00  | 0.00e+00 |
++------+------------+----------+
+Chi matrix [MHz]:
++------+----------+----------+
+| Mode |    1     |    2     |
++------+----------+----------+
+|  1   | 3.21e+02 | 1.93e+00 |
+|  2   | 1.93e+00 | 2.91e-03 |
++------+----------+----------+
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_metal.analyses.quantization</span><span class="w"> </span><span class="kn">import</span> <span class="n">EPRanalysis</span>
+<span class="n">eig_qb</span> <span class="o">=</span> <span class="n">EPRanalysis</span><span class="p">(</span><span class="n">design</span><span class="p">,</span> <span class="s2">&quot;hfss&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eig_qb</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">max_passes</span> <span class="o">=</span> <span class="mi">12</span>
+<span class="n">eig_qb</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">max_delta_f</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">eig_qb</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">min_freq_ghz</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">eig_qb</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">n_modes</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">eig_qb</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">vars</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">(</span><span class="n">Lj</span><span class="o">=</span> <span class="s1">&#39;12.31 nH&#39;</span><span class="p">,</span> <span class="n">Cj</span><span class="o">=</span> <span class="s1">&#39;0 fF&#39;</span><span class="p">)</span>
+
+<span class="n">eig_qb</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">setup</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;name&#39;: &#39;Setup&#39;,
+ &#39;reuse_selected_design&#39;: True,
+ &#39;reuse_setup&#39;: True,
+ &#39;min_freq_ghz&#39;: 1,
+ &#39;n_modes&#39;: 2,
+ &#39;max_delta_f&#39;: 0.1,
+ &#39;max_passes&#39;: 12,
+ &#39;min_passes&#39;: 1,
+ &#39;min_converged&#39;: 1,
+ &#39;pct_refinement&#39;: 30,
+ &#39;basis_order&#39;: 1,
+ &#39;vars&#39;: {&#39;Lj&#39;: &#39;12.31 nH&#39;, &#39;Cj&#39;: &#39;0 fF&#39;},
+ &#39;run&#39;: {&#39;name&#39;: None,
+  &#39;components&#39;: [&#39;Q1&#39;, &#39;readout&#39;],
+  &#39;open_terminations&#39;: [(&#39;readout&#39;, &#39;end&#39;)],
+  &#39;port_list&#39;: [],
+  &#39;jj_to_port&#39;: None,
+  &#39;ignored_jjs&#39;: None,
+  &#39;box_plus_buffer&#39;: True}}
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eig_qb</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">components</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Q1&#39;</span><span class="p">,</span><span class="s1">&#39;readout&#39;</span><span class="p">],</span> <span class="n">open_terminations</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;readout&#39;</span><span class="p">,</span><span class="s1">&#39;end&#39;</span><span class="p">)],</span><span class="n">port_list</span><span class="o">=</span><span class="p">[])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO 05:53PM [connect_design]:  Opened active design
+        Design:    Design_hfss [Solution type: Eigenmode]
+INFO 05:53PM [get_setup]:       Opened setup `Setup`  (&lt;class &#39;pyEPR.ansys.HfssEMSetup&#39;&gt;)
+INFO 05:53PM [analyze]: Analyzing setup Setup
+05:56PM 54s INFO [get_f_convergence]: Saved convergences to c:\Users\simona.zaccaria4\Desktop\GitHub\QuLTRA\tutorial\hfss_eig_f_convergence.csv
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eig_qb</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">junctions</span><span class="o">.</span><span class="n">jj</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">(</span><span class="n">rect</span><span class="o">=</span><span class="s1">&#39;JJ_rect_Lj_Q1_rect_jj&#39;</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="s1">&#39;JJ_Lj_Q1_rect_jj_&#39;</span><span class="p">,</span>
+                  <span class="n">Lj_variable</span><span class="o">=</span><span class="s1">&#39;Lj&#39;</span><span class="p">,</span> <span class="n">Cj_variable</span><span class="o">=</span><span class="s1">&#39;Cj&#39;</span><span class="p">)</span>
+<span class="n">eig_qb</span><span class="o">.</span><span class="n">setup</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;junctions&#39;: {&#39;jj&#39;: {&#39;rect&#39;: &#39;JJ_rect_Lj_Q1_rect_jj&#39;,
+   &#39;line&#39;: &#39;JJ_Lj_Q1_rect_jj_&#39;,
+   &#39;Lj_variable&#39;: &#39;Lj&#39;,
+   &#39;Cj_variable&#39;: &#39;Cj&#39;}},
+ &#39;dissipatives&#39;: {&#39;dielectrics_bulk&#39;: [&#39;main&#39;]},
+ &#39;cos_trunc&#39;: 8,
+ &#39;fock_trunc&#39;: 7,
+ &#39;sweep_variable&#39;: &#39;Lj&#39;}
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eig_qb</span><span class="o">.</span><span class="n">run_epr</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Design &#34;Design_hfss&#34; info:
+        # eigenmodes    2
+        # variations    1
+Design &#34;Design_hfss&#34; info:
+        # eigenmodes    2
+        # variations    1
+
+        energy_elec_all       = 1.85420701261036e-24
+        energy_elec_substrate = 1.69917553337127e-24
+        EPR of substrate = 91.6%
+
+        energy_mag    = 1.85068391186877e-24
+        energy_mag % of energy_elec_all  = 99.8%
+
+
+Variation 0  [1/1]
+
+  <span class="ansi-bold">Mode 0 at 5.64 GHz   [1/2]</span>
+    Calculating ℰ_magnetic,ℰ_electric
+       (ℰ_E-ℰ_H)/ℰ_E       ℰ_E       ℰ_H
+               99.4%  2.139e-24 1.379e-26
+
+    Calculating junction energy participation ration (EPR)
+        method=`line_voltage`. First estimates:
+        junction        EPR p_0j   sign s_0j    (p_capacitive)
+                Energy fraction (Lj over Lj&amp;Cj)= 97.00%
+        jj              0.992592  (+)        0.0307052
+                (U_tot_cap-U_tot_ind)/mean=1.56%
+Calculating Qdielectric_main for mode 0 (0/1)
+p_dielectric_main_0 = 0.9194945926377162
+
+  <span class="ansi-bold">Mode 1 at 9.34 GHz   [2/2]</span>
+    Calculating ℰ_magnetic,ℰ_electric
+       (ℰ_E-ℰ_H)/ℰ_E       ℰ_E       ℰ_H
+                0.2%  9.271e-25 9.253e-25
+
+    Calculating junction energy participation ration (EPR)
+        method=`line_voltage`. First estimates:
+        junction        EPR p_1j   sign s_1j    (p_capacitive)
+                Energy fraction (Lj over Lj&amp;Cj)= 92.18%
+        jj              0.00190362  (+)        0.000161566
+                (U_tot_cap-U_tot_ind)/mean=0.01%
+Calculating Qdielectric_main for mode 1 (1/1)
+p_dielectric_main_1 = 0.9163893361503169
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING 04:41PM [__init__]: &lt;p&gt;Error: &lt;class &#39;IndexError&#39;&gt;&lt;/p&gt;
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+ANALYSIS DONE. Data saved to:
+
+C:\data-pyEPR\Project37\Design_hfss\2025-07-17 16-40-56.npz
+
+
+         Differences in variations:
+
+
+
+ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+Variation 0
+
+Starting the diagonalization
+Finished the diagonalization
+Pm_norm=
+modes
+0    1.031801
+1    1.041584
+dtype: float64
+
+Pm_norm idx =
+      jj
+0   True
+1  False
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING:py.warnings:c:\Users\simona.zaccaria4\.conda\envs\qiskit-metal\Lib\site-packages\pyEPR\core_quantum_analysis.py:711: FutureWarning: Support for multi-dimensional indexing (e.g. `obj[:, None]`) is deprecated and will be removed in a future version.  Convert to a numpy array before indexing instead.
+  result[&#39;Q_coupling&#39;] = self.Qm_coupling[variation][self.Qm_coupling[variation].columns[junctions]][modes]#TODO change the columns to junctions
+
+WARNING:py.warnings:c:\Users\simona.zaccaria4\.conda\envs\qiskit-metal\Lib\site-packages\pyEPR\core_quantum_analysis.py:716: FutureWarning: Support for multi-dimensional indexing (e.g. `obj[:, None]`) is deprecated and will be removed in a future version.  Convert to a numpy array before indexing instead.
+  result[&#39;Qs&#39;] = self.Qs[variation][self.PM[variation].columns[junctions]][modes] #TODO change the columns to junctions
+
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+*** P (participation matrix, not normlz.)
+         jj
+0  0.963022
+1  0.001903
+
+*** S (sign-bit matrix)
+   s_jj
+0     1
+1    -1
+*** P (participation matrix, normalized.)
+      0.99
+    0.0019
+
+*** Chi matrix O1 PT (MHz)
+    Diag is anharmonicity, off diag is full cross-Kerr.
+       296     1.88
+      1.88  0.00298
+
+*** Chi matrix ND (MHz)
+       333     1.69
+      1.69  0.00238
+
+*** Frequencies O1 PT (MHz)
+0    5344.782102
+1    9343.662915
+dtype: float64
+
+*** Frequencies ND (MHz)
+0    5326.965047
+1    9343.679300
+dtype: float64
+
+*** Q_coupling
+Empty DataFrame
+Columns: []
+Index: [0, 1]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<section id="Mode-frequencies-(MHz)">
+<h2>Mode frequencies (MHz)<a class="headerlink" href="#Mode-frequencies-(MHz)" title="Link to this heading"></a></h2>
+</section>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<p>Numerical diagonalization</p>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Lj</th>
+      <th>12.31</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>5326.97</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>9343.68</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<section id="Kerr-Non-linear-coefficient-table-(MHz)">
+<h2>Kerr Non-linear coefficient table (MHz)<a class="headerlink" href="#Kerr-Non-linear-coefficient-table-(MHz)" title="Link to this heading"></a></h2>
+</section>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<p>Numerical diagonalization</p>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>0</th>
+      <th>1</th>
+    </tr>
+    <tr>
+      <th>Lj</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th rowspan="2" valign="top">12.31</th>
+      <th>0</th>
+      <td>332.93</td>
+      <td>1.69e+00</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1.69</td>
+      <td>2.38e-03</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Basics.html" class="btn btn-neutral float-left" title="Basic use of the package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="JJ_array.html" class="btn btn-neutral float-right" title="Josepshon Junction array" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Simona Zaccaria, Antonio Gnudi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

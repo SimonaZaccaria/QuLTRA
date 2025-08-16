@@ -1,0 +1,331 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Basic use of the package &mdash; QuLTRA v0.1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5e3f2911"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Qubit Coupled to a resonator" href="Qubit_resonator.html" />
+    <link rel="prev" title="Tutorials" href="../Tutorials.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            QuLTRA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../Tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Basic use of the package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Mode-frequencies">Mode frequencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Cross-Kerr-matrix">Cross-Kerr matrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Dissipation-rate">Dissipation rate</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Qubit_resonator.html">Qubit Coupled to a resonator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="JJ_array.html">Josepshon Junction array</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Exploiting_higher_modes.html">Exploiting higher modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Intrinsic_Purcell_filter.html">Fast multiplexed superconducting qubit readout with intrinsic Purcell filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Coupling_qubits_to_feedline.html">Coupling qubits to the feedline</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../Documentation.html">Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">QuLTRA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../Tutorials.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Basic use of the package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorial/Basics.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Basic-use-of-the-package">
+<h1>Basic use of the package<a class="headerlink" href="#Basic-use-of-the-package" title="Link to this heading"></a></h1>
+<p>QuLTRA is an open-source Python library for the analysis of superconducting circuits that include both lumped elements (capacitors, inductors, Josephson junctions, resistors) and distributed components (such as coplanar waveguides and CPW couplers).</p>
+<p>The library provides tools to compute:</p>
+<ol class="arabic simple">
+<li><p>Eigenfrequencies of the circuit modes,</p></li>
+<li><p>Dissipation rates, including coupling to external lines,</p></li>
+<li><p>The cross-Kerr matrix, describing the nonlinear interactions between modes.</p></li>
+</ol>
+<p>QuLTRA is designed to support fast, layout-independent modeling in the early design stages, before full electromagnetic simulations.</p>
+<p>To create the circuit, we need to instantiate an object of the QCircuit class. We must provide:</p>
+<ol class="arabic simple">
+<li><p>a list of components that define the circuit topology,</p></li>
+<li><p>the minimum and maximum frequencies expressed in GHz over which the circuit will be analyzed.</p></li>
+</ol>
+<p>For lumped components (C, L, J, R), we need to provide:</p>
+<ol class="arabic simple">
+<li><p>the positive and negative nodes the component connects to,</p></li>
+<li><p>the value of the component (in SI units).</p></li>
+</ol>
+<p>It is also possible to simulate an array of Josephson junction by simply instantiating a J component and passing the number of junctions in the array as the fourth argument.</p>
+<p>For a CPW component, we need to provide:</p>
+<ol class="arabic simple">
+<li><p>the negative and positive nodes it connects to,</p></li>
+<li><p>its length (in meters),</p></li>
+<li><p>and optionally its characteristic impedance (in Ohms).</p></li>
+</ol>
+<p>By default, the impedance is set to 50 Ω if not specified. It is assumed that the CPWs are placed on a substrate with a dielectric constant of 11.9, which corresponds to the dielectric constant that ANSYS uses for silicon. If a different dielectric constant is desired, it can be manually modified in the constants.py file.</p>
+<p><strong>Note</strong>: Node 0 is considered the ground node</p>
+<p>For instance, in the case of a qubit coupled to a <span class="math notranslate nohighlight">\(\lambda/4\)</span> resonator, we can write:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qultra</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">qu</span>
+
+
+<span class="n">Cj</span><span class="o">=</span><span class="mf">90e-15</span> <span class="c1">#qubit capacitance</span>
+<span class="n">Lj</span><span class="o">=</span><span class="mf">8e-9</span> <span class="c1">#qubit junction</span>
+<span class="n">Cg</span><span class="o">=</span><span class="mf">5e-15</span> <span class="c1">#coupling capacitance</span>
+<span class="n">l</span><span class="o">=</span><span class="mf">4.5e-3</span> <span class="c1">#cpw length</span>
+
+<span class="n">f_min</span><span class="o">=</span><span class="mi">3</span> <span class="c1">#minimum frequency [GHz]</span>
+<span class="n">f_max</span><span class="o">=</span><span class="mi">12</span> <span class="c1">#maximum frequency [GHz]</span>
+
+<span class="n">net</span><span class="o">=</span><span class="p">[</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Cj</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">J</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Lj</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">Cg</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">l</span><span class="p">)]</span>
+
+<span class="n">circuit</span><span class="o">=</span><span class="n">qu</span><span class="o">.</span><span class="n">QCircuit</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="n">f_min</span><span class="p">,</span><span class="n">f_max</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<section id="Mode-frequencies">
+<h2>Mode frequencies<a class="headerlink" href="#Mode-frequencies" title="Link to this heading"></a></h2>
+<p>The mode frequencies together with the dissipation rates are extracted by calculating the zeros of the admittance matrix determinant defined as <span class="math notranslate nohighlight">\(\frac{2\pi \kappa}{2}+j2\pi f\)</span>. It is possible to retrieve the mode frequencies (in GHz) as a list—using the mode_frequencies() method—for further processing or numerical calculations, or simply use the show_modes() method to print them in a nicely formatted table.</p>
+<p>The show_modes() method also plots the dissipation rates <span class="math notranslate nohighlight">\(\kappa\)</span> for each mode. Since the circuit contains no dissipative elements, the κ values will be zero, and no quality factor (Q) is defined.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">frequencies</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">mode_frequencies</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mode Frequencies (GHz):&quot;</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">)</span>
+
+<span class="n">circuit</span><span class="o">.</span><span class="n">show_modes</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Mode Frequencies (GHz): [5.765693573044772, 6.529970034428903]
++------+------------+----------+
+| Mode | Freq [GHz] | k [MHz]  |
++------+------------+----------+
+|  1   |  5.77e+00  | 0.00e+00 |
+|  2   |  6.53e+00  | 0.00e+00 |
++------+------------+----------+
+</pre></div></div>
+</div>
+</section>
+<section id="Cross-Kerr-matrix">
+<h2>Cross-Kerr matrix<a class="headerlink" href="#Cross-Kerr-matrix" title="Link to this heading"></a></h2>
+<p>Since the circuit contains a Josephson junction component, we can also compute the cross-Kerr matrix (expressed in MHz), which describes the nonlinear interactions between the modes.</p>
+<p>As with the mode frequencies, the cross-Kerr matrix can either be retrieved as a matrix using the run_epr() method, for further analysis, or visualized directly using the show_chi() method, which plots the matrix in a clear and readable format.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cross_kerr_matrix</span><span class="o">=</span><span class="n">circuit</span><span class="o">.</span><span class="n">run_epr</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cross_kerr_matrix</span><span class="p">)</span>
+<span class="n">circuit</span><span class="o">.</span><span class="n">show_chi</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[[1.98809413e+02 5.07443676e+00]
+ [5.07443676e+00 3.23801424e-02]]
+Chi matrix [MHz]:
++------+----------+----------+
+| Mode |    1     |    2     |
++------+----------+----------+
+|  1   | 1.99e+02 | 5.07e+00 |
+|  2   | 5.07e+00 | 3.24e-02 |
++------+----------+----------+
+</pre></div></div>
+</div>
+<p>If we’re only interested in visualizing all the key results—including mode frequencies and the cross-Kerr matrix—we can simply call the show_all() method.</p>
+<p>This will automatically display:</p>
+<ol class="arabic simple">
+<li><p>the table of mode frequencies,</p></li>
+<li><p>the dissipation rates (κ),</p></li>
+<li><p>and the cross-Kerr matrix (χ) in a compact and readable format.</p></li>
+</ol>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">circuit</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
++------+------------+----------+
+| Mode | Freq [GHz] | k [MHz]  |
++------+------------+----------+
+|  1   |  5.77e+00  | 0.00e+00 |
+|  2   |  6.53e+00  | 0.00e+00 |
++------+------------+----------+
+Chi matrix [MHz]:
++------+----------+----------+
+| Mode |    1     |    2     |
++------+----------+----------+
+|  1   | 1.99e+02 | 5.07e+00 |
+|  2   | 5.07e+00 | 3.24e-02 |
++------+----------+----------+
+</pre></div></div>
+</div>
+</section>
+<section id="Dissipation-rate">
+<h2>Dissipation rate<a class="headerlink" href="#Dissipation-rate" title="Link to this heading"></a></h2>
+<p>Typically, quantum circuits are coupled to feedlines terminated with 50 Ω resistors. This coupling can be either:</p>
+<ol class="arabic simple">
+<li><p>Capacitive, by using a lumped capacitor that connects the resonator to the feedline</p></li>
+<li><p>Primarily inductive, by using CPW couplers.</p></li>
+</ol>
+<p>QuLTRA allows modeling both types of coupling. For capacitive coupling, simply add a C component between the resonator node and a 50 Ω resistor (representing the feedline termination). For CPW coupling, you can instantiate a CPW_coupler component. This requires:</p>
+<ol class="arabic simple">
+<li><p>a list of the 4 nodes the coupler is connected to,</p></li>
+<li><p>a list of gap widths (in micrometers),</p></li>
+<li><p>a list of CPW widths involved in the coupling (in micrometers),</p></li>
+<li><p>the length of the coupler (in meters).</p></li>
+</ol>
+<p>Two of the coupler’s terminals are then connected to 50 Ω resistors to model the feedline.</p>
+<p>The second case is shown below:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">l_coupler</span><span class="o">=</span><span class="mf">0.7e-3</span> <span class="c1">#coupler length</span>
+<span class="n">coupler_nodes</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span> <span class="c1">#coupler nodes</span>
+<span class="n">gap</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">]</span> <span class="c1">#coupler gaps</span>
+<span class="n">width</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">15</span><span class="p">]</span> <span class="c1">#coupler widths</span>
+
+<span class="n">net1</span><span class="o">=</span><span class="p">[</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Cj</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">J</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Lj</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">Cg</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">l</span><span class="o">-</span><span class="n">l_coupler</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW_coupler</span><span class="p">(</span><span class="n">coupler_nodes</span><span class="p">,</span><span class="n">gap</span><span class="p">,</span><span class="n">width</span><span class="p">,</span><span class="n">l_coupler</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">R</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">50</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">R</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">50</span><span class="p">)]</span>
+
+<span class="n">circuit_with_loss</span><span class="o">=</span><span class="n">qu</span><span class="o">.</span><span class="n">QCircuit</span><span class="p">(</span><span class="n">net1</span><span class="p">,</span><span class="n">f_min</span><span class="p">,</span><span class="n">f_max</span><span class="p">)</span>
+
+<span class="n">circuit_with_loss</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
++------+------------+-----------+-----------+
+| Mode | Freq [GHz] |  k [MHz]  |     Q     |
++------+------------+-----------+-----------+
+|  1   |  5.77e+00  | -1.37e-02 | -4.22e+05 |
+|  2   |  6.49e+00  | -1.55e+00 | -4.18e+03 |
++------+------------+-----------+-----------+
+Chi matrix [MHz]:
++------+----------+----------+
+| Mode |    1     |    2     |
++------+----------+----------+
+|  1   | 1.98e+02 | 5.51e+00 |
+|  2   | 5.51e+00 | 3.83e-02 |
++------+----------+----------+
+</pre></div></div>
+</div>
+<p>As shown in the results, in this case the presence of dissipative components leads to a non-zero coupling rate (κ) and therefore to a finite quality factor (Q).</p>
+<p><strong>Note</strong>: When using a CPW_coupler, the length of the CPW section representing the λ/4 resonator must be adjusted by subtracting the length of the coupler. This ensures the total electrical length remains accurate.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../Tutorials.html" class="btn btn-neutral float-left" title="Tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Qubit_resonator.html" class="btn btn-neutral float-right" title="Qubit Coupled to a resonator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Simona Zaccaria, Antonio Gnudi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,304 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "2ef29b45",
+   "metadata": {},
+   "source": [
+    "## QuLTRA vs QuCAT\n",
+    "\n",
+    "Here, we compare the results obtained with QuLTRA and QuCAT to demonstrate that, for lumped-element structures, both tools yield consistent and equivalent outcomes.\n",
+    "\n",
+    "The first structure consists of a simple qubit coupled to an LC resonator."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "03eda50e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import qucat\n",
+    "import qultra as qu\n",
+    "import numpy as np\n",
+    "Cj=90e-15\n",
+    "Lj=8e-9\n",
+    "Cg=5e-15\n",
+    "Cr=70e-15\n",
+    "Lr=8e-9\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "d27296da",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "         mode |       freq.  |       diss.  |       anha.  |\n",
+      "            0 |     5.74 GHz |          0Hz |      181 MHz |\n",
+      "            1 |     6.55 GHz |          0Hz |      731 kHz |\n",
+      "\n",
+      "Kerr coefficients (diagonal = Kerr, off-diagonal = cross-Kerr)\n",
+      "         mode |         0    |         1    |\n",
+      "            0 |      181 MHz |              |\n",
+      "            1 |       23 MHz |      731 kHz |\n",
+      "\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "(array([5.73762268e+09, 6.54921303e+09]),\n",
+       " array([0., 0.]),\n",
+       " array([1.80694237e+08, 7.31150673e+05]),\n",
+       " array([[1.80694237e+08, 2.29882329e+07],\n",
+       "        [2.29882329e+07, 7.31150673e+05]]))"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "qucat_netlist=[qucat.C(0,1,Cj),qucat.J(0,1,Lj),qucat.C(1,2,Cg),qucat.C(0,2,Cr),qucat.L(0,2,Lr)]\n",
+    "qucat_circuit=qucat.Network(qucat_netlist)\n",
+    "\n",
+    "qucat_circuit.f_k_A_chi(pretty_print=True)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "fdc78f8e",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+------+------------+----------+\n",
+      "| Mode | Freq [GHz] | k [MHz]  |\n",
+      "+------+------------+----------+\n",
+      "|  1   |  5.74e+00  | 0.00e+00 |\n",
+      "|  2   |  6.55e+00  | 0.00e+00 |\n",
+      "+------+------------+----------+\n",
+      "Chi matrix [MHz]:\n",
+      "+------+----------+----------+\n",
+      "| Mode |    1     |    2     |\n",
+      "+------+----------+----------+\n",
+      "|  1   | 1.81e+02 | 2.30e+01 |\n",
+      "|  2   | 2.30e+01 | 7.31e-01 |\n",
+      "+------+----------+----------+\n"
+     ]
+    }
+   ],
+   "source": [
+    "qultra_netlist=[qu.C(0,1,Cj),qu.J(0,1,Lj),qu.C(1,2,Cg),qu.C(0,2,Cr),qu.L(0,2,Lr)]\n",
+    "\n",
+    "qultra_circuit=qu.QCircuit(qultra_netlist,4,7)\n",
+    "qultra_circuit.show_all()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "be901c65",
+   "metadata": {},
+   "source": [
+    "Another structure that we can compare is the microwave band-pass filter presented in the appendix of the original [QuCAT paper](https://arxiv.org/abs/1908.10342).\n",
+    "\n",
+    "After constructing the structure, we calculate the dissipation rates."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "bdab408b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "RL=50\n",
+    "C=1e-12 #filter capacitance\n",
+    "L=100e-9 #filter inductance\n",
+    "C1=100e-15 #resonator capacitance\n",
+    "L1=10e-9 #resonator inductance"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "55b7a2bd",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[5.63805694e+07 2.31968965e+07 5.71755657e+00]\n"
+     ]
+    }
+   ],
+   "source": [
+    "qucat_netlist=[qucat.R(0,1,RL),qucat.L(1,2,L),qucat.C(0,2,C),qucat.L(2,3,L),qucat.C(0,3,C),qucat.C(3,4,C1),qucat.L(0,4,L1)]\n",
+    "qucat_circuit=qucat.Network(qucat_netlist)\n",
+    "k=qucat_circuit.loss_rates()\n",
+    "print(k)\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "2221f57f",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[5.6380569378219546e-05, 2.3196896450171568e-05, 5.717556554390927e-12]\n"
+     ]
+    }
+   ],
+   "source": [
+    "qultra_netlist=[qu.R(0,1,RL),qu.L(1,2,L),qu.C(0,2,C),qu.L(2,3,L),qu.C(0,3,C),qu.C(3,4,C1),qu.L(0,4,L1)]\n",
+    "qultra_circuit=qu.QCircuit(qultra_netlist,0.1,10)\n",
+    "k=qultra_circuit.kappa()\n",
+    "k = [kappa / 1e6 for kappa in k] #convert to Hz\n",
+    "print(k) #Hz"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9c25f122",
+   "metadata": {},
+   "source": [
+    "In the original QuCAT paper, an example is provided that shows how to model a multimode resonator. In particular, QuCAT allows one to model a multimode resonator by applying Foster's reactance theorem, representing it as a series of LC circuits.\n",
+    "The example shown below is taken from the paper and analyzes a qubit coupled to a $\\lambda/4$ resonator in the ultra-strong coupling regime. The corresponding QuCAT code is also reproduced from the original publication."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "id": "775669cc",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "The qubit frequency is:  8.0352410953173\n",
+      "The qubit anharmonicity is:  357.3988610200252\n"
+     ]
+    }
+   ],
+   "source": [
+    "f0=4.603e9  \n",
+    "w0=f0*2*np.pi\n",
+    "\n",
+    "Z0=50\n",
+    "Ej=18.15e9\n",
+    "Cc=40.3e-15\n",
+    "\n",
+    "Cj=5.13e-15\n",
+    "C0=np.pi/4/w0/Z0\n",
+    "L0=4*Z0/np.pi/w0\n",
+    "\n",
+    "netlist=[qucat.J(12,1,Ej,use_E=True),qucat.C(12,1,Cj), qucat.C(1,2,Cc)]\n",
+    "for m in range(10):\n",
+    "    node_minus=2+m  \n",
+    "    node_plus=(2+m+1)\n",
+    "    Lm=L0/(2*m+1)**2\n",
+    "\n",
+    "    netlist=netlist+[qucat.L(node_minus,node_plus,Lm),qucat.C(node_minus,node_plus,C0)]\n",
+    "\n",
+    "mmusc=qucat.Network(netlist)\n",
+    "print('The qubit frequency is: ',mmusc.eigenfrequencies()[1]/1e9)\n",
+    "print('The qubit anharmonicity is: ',mmusc.anharmonicities()[1]/1e6)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "id": "c8ebaeb5",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+------+------------+----------+\n",
+      "| Mode | Freq [GHz] | k [MHz]  |\n",
+      "+------+------------+----------+\n",
+      "|  1   |  4.37e+00  | 0.00e+00 |\n",
+      "|  2   |  8.02e+00  | 0.00e+00 |\n",
+      "+------+------------+----------+\n",
+      "Chi matrix [MHz]:\n",
+      "+------+----------+----------+\n",
+      "| Mode |    1     |    2     |\n",
+      "+------+----------+----------+\n",
+      "|  1   | 1.97e-01 | 1.67e+01 |\n",
+      "|  2   | 1.67e+01 | 3.52e+02 |\n",
+      "+------+----------+----------+\n"
+     ]
+    }
+   ],
+   "source": [
+    "e = 1.60217657e-19  # electron charge\n",
+    "h = 6.62606957e-34  # Plank's\n",
+    "\n",
+    "phi0=h/(2*e)\n",
+    "Lj=(phi0/(2*np.pi))**2/Ej/h\n",
+    "\n",
+    "fr=4.603e9\n",
+    "c=3e8\n",
+    "eps_eff=(11.9+1)/2 \n",
+    "l=c/np.sqrt(eps_eff)/fr/4 #resonator length\n",
+    "\n",
+    "net=[qu.C(0,1,Cj),qu.J(0,1,Lj),qu.C(1,2,Cc),qu.CPW(2,0,l)]\n",
+    "circuit=qu.QCircuit(net,1,10)\n",
+    "circuit.show_all()\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dfdb9f0d",
+   "metadata": {},
+   "source": [
+    "The qubit frequency and anharmonicity values differ slightly because QuCAT relies on an approximation that becomes more accurate as the number of LC oscillators in the circuit increases, while in QuLTRA the transmission line is modeled exactly"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cf62c26a",
+   "metadata": {},
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.9"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

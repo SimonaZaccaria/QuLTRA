@@ -1,0 +1,458 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coupling qubits to the feedline &mdash; QuLTRA v0.1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5e3f2911"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Documentation" href="../Documentation.html" />
+    <link rel="prev" title="Fast multiplexed superconducting qubit readout with intrinsic Purcell filtering" href="Intrinsic_Purcell_filter.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            QuLTRA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../Tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Basics.html">Basic use of the package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Qubit_resonator.html">Qubit Coupled to a resonator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="JJ_array.html">Josepshon Junction array</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Exploiting_higher_modes.html">Exploiting higher modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Intrinsic_Purcell_filter.html">Fast multiplexed superconducting qubit readout with intrinsic Purcell filtering</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Coupling qubits to the feedline</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../Documentation.html">Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">QuLTRA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../Tutorials.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Coupling qubits to the feedline</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorial/Coupling_qubits_to_feedline.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Coupling-qubits-to-the-feedline">
+<h1>Coupling qubits to the feedline<a class="headerlink" href="#Coupling-qubits-to-the-feedline" title="Link to this heading"></a></h1>
+<p>We consider a feedline with an input capacitance $ C_{<span class="math">\text{in}</span>} $ to investigate how the coupling changes as the distance between the device under test (either a qubit coupled to a single resonator or a qubit coupled to a resonator which is itself coupled to a Purcell filter) and the input capacitance varies. We perform this analysis for both capacitive and inductive coupling. We expect maximum coupling at a distance of <span class="math notranslate nohighlight">\(\lambda/2\)</span> for capacitive coupling and
+<span class="math notranslate nohighlight">\(\lambda/4\)</span> for inductive coupling, where <span class="math notranslate nohighlight">\(\lambda\)</span> is the wavelength corresponding to the frequency we aim to read out through the feedline.</p>
+<p>It should be noted that a feedline terminated on an input capacitance may introduce unwanted modes. Such modes generally exhibit a very high <span class="math notranslate nohighlight">\(\kappa\)</span> and are automatically removed by the code.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qultra</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">qu</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Cj</span><span class="o">=</span><span class="mf">85e-15</span> <span class="c1">#qubit capacitance</span>
+<span class="n">Lj</span><span class="o">=</span><span class="mf">9.2e-9</span> <span class="c1">#qubit junction</span>
+<span class="n">Cg</span><span class="o">=</span><span class="mf">6e-15</span> <span class="c1">#coupling capacitance</span>
+<span class="n">l</span><span class="o">=</span><span class="mf">3.8e-3</span> <span class="c1">#cpw length</span>
+<span class="n">Cp</span><span class="o">=</span><span class="mf">12e-15</span>
+
+
+<span class="n">net</span><span class="o">=</span><span class="p">[</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Cj</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">J</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Lj</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">Cg</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">l</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">Cp</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">l</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mf">20e-15</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">R</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">50</span><span class="p">)]</span>
+<span class="n">circuit</span><span class="o">=</span><span class="n">qu</span><span class="o">.</span><span class="n">QCircuit</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">circuit</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Qubit Purcell decay time is:&quot;</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="n">circuit</span><span class="o">.</span><span class="n">kappa</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mf">1e6</span><span class="o">/</span><span class="mi">2</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">1e-3</span><span class="p">,</span><span class="s2">&quot;ms&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
++------+------------+-----------+-----------+
+| Mode | Freq [GHz] |  k [MHz]  |     Q     |
++------+------------+-----------+-----------+
+|  1   |  5.50e+00  | -4.64e-05 | -1.18e+08 |
+|  2   |  7.33e+00  | -1.49e+01 | -4.90e+02 |
+|  3   |  7.64e+00  | -5.31e+00 | -1.44e+03 |
++------+------------+-----------+-----------+
+Chi matrix [MHz]:
++------+----------+----------+----------+
+| Mode |    1     |    2     |    3     |
++------+----------+----------+----------+
+|  1   | 2.11e+02 | 4.55e-01 | 1.21e+00 |
+|  2   | 4.55e-01 | 2.45e-04 | 1.30e-03 |
+|  3   | 1.21e+00 | 1.30e-03 | 1.73e-03 |
++------+----------+----------+----------+
+Qubit Purcell decay time is: 3.427857827751835 ms
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qultra</span><span class="w"> </span><span class="kn">import</span> <span class="n">constants</span>
+<span class="n">constants</span><span class="o">.</span><span class="n">step</span><span class="o">=</span><span class="mf">0.001</span>
+<span class="n">Cin</span><span class="o">=</span><span class="mf">0.204</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="mi">50</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mf">7.6e9</span><span class="p">)</span>
+<span class="n">l_l</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">k1</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">for</span> <span class="n">li</span> <span class="ow">in</span> <span class="n">l_l</span><span class="p">:</span>
+    <span class="n">net</span><span class="o">=</span><span class="p">[</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Cj</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">J</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Lj</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">Cg</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">l</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">Cp</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">l</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mf">20e-15</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="n">li</span><span class="o">*</span><span class="mf">1e-3</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">Cin</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">R</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">50</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">R</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">50</span><span class="p">)]</span>
+    <span class="n">circuit</span><span class="o">=</span><span class="n">qu</span><span class="o">.</span><span class="n">QCircuit</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">k1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">circuit</span><span class="o">.</span><span class="n">kappa</span><span class="p">()[</span><span class="mi">2</span><span class="p">])</span>
+<br/><br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:65: UserWarning: Newton&#39;s method failed for initial guess 11947674207.507673j: Failed to converge after 150 iterations, value is (-2765418734.14917+8629017391.706299j).
+  warnings.warn(f&#34;Newton&#39;s method failed for initial guess {x0}: {e_newton}&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-2765418734.1491723+8629017391.706297j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-2730992242.4150095+8494629400.988188j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-2697293423.1152987+8364353010.970018j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-2664299149.7694764+8237974706.168632j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-2631991092.9345245+8115294189.9715j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-2600355462.3362546+7996124061.939791j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-2569382623.424843+7880289569.708474j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-2539066583.8641067+7767628391.325259j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-2509404355.915103+7657990402.240671j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-2480395212.5544333+7551237382.721739j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Cj2</span><span class="o">=</span><span class="mf">97e-15</span>
+<span class="n">Lj2</span><span class="o">=</span><span class="mf">16.3e-9</span>
+<span class="n">Cg2</span><span class="o">=</span><span class="mf">8e-15</span>
+<span class="n">l2</span><span class="o">=</span><span class="mf">5.85e-3</span>
+<span class="n">lc</span><span class="o">=</span><span class="mf">0.7e-3</span>
+
+<span class="n">net2</span><span class="o">=</span><span class="p">[</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Cj2</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">J</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Lj2</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">Cg2</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">l2</span><span class="o">-</span><span class="n">lc</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW_coupler</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">],[</span><span class="mi">15</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">15</span><span class="p">],</span><span class="n">lc</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="n">l2</span><span class="o">-</span><span class="n">lc</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">R</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">50</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="n">Cin</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">R</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">50</span><span class="p">)]</span>
+<span class="n">circuit2</span><span class="o">=</span><span class="n">qu</span><span class="o">.</span><span class="n">QCircuit</span><span class="p">(</span><span class="n">net2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">circuit2</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
++------+------------+-----------+-----------+
+| Mode | Freq [GHz] |  k [MHz]  |     Q     |
++------+------------+-----------+-----------+
+|  1   |  3.84e+00  | -4.93e-03 | -7.80e+05 |
+|  2   |  4.98e+00  | -2.76e+00 | -1.81e+03 |
++------+------------+-----------+-----------+
+Chi matrix [MHz]:
++------+----------+----------+
+| Mode |    1     |    2     |
++------+----------+----------+
+|  1   | 1.82e+02 | 2.10e+00 |
+|  2   | 2.10e+00 | 6.04e-03 |
++------+----------+----------+
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="n">k2</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">for</span> <span class="n">li</span> <span class="ow">in</span> <span class="n">l_l</span><span class="p">:</span>
+    <span class="n">net2</span><span class="o">=</span><span class="p">[</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Cj2</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">J</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Lj2</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">Cg2</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">l2</span><span class="o">-</span><span class="n">lc</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW_coupler</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">],[</span><span class="mi">15</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">15</span><span class="p">],</span><span class="n">lc</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="n">li</span><span class="o">*</span><span class="mf">1e-3</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">R</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">50</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="n">Cin</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">R</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">50</span><span class="p">)]</span>
+    <span class="n">circuit2</span><span class="o">=</span><span class="n">qu</span><span class="o">.</span><span class="n">QCircuit</span><span class="p">(</span><span class="n">net2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">k2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">circuit2</span><span class="o">.</span><span class="n">kappa</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-4649134255.719523+9208964384.734392j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-4562801462.14497+8999810928.990198j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-4480072583.546942+8800017992.851988j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-4400704306.063507+8608974137.684431j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-4324476070.651874+8426119117.129855j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-4251187397.734509+8250938818.623587j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-4180655569.5274034+8082960748.330269j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-4112713623.185771+7921750001.82787j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-4047208611.9238124+7766905668.106449j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:65: UserWarning: Newton&#39;s method failed for initial guess 8288340939.111109j: Tolerance of (4.76837158203125e-07+0j) reached. Failed to converge after 19 iterations, value is (-3984000096.068919+7618057619.330958j).
+  warnings.warn(f&#34;Newton&#39;s method failed for initial guess {x0}: {e_newton}&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3984000096.068917+7618057619.330943j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3922958830.913135+7474863643.45938j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3863965622.849436+7337006881.209097j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3806910329.4538264+7204193532.987835j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3751690982.830714+7076150805.217025j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3698213018.688848+6952625068.953495j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:65: UserWarning: Newton&#39;s method failed for initial guess 7451299166.965779j: Tolerance of 9.5367431640625e-07j reached. Failed to converge after 31 iterations, value is (-3646388596.294395+6833380206.855303j).
+  warnings.warn(f&#34;Newton&#39;s method failed for initial guess {x0}: {e_newton}&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3646388596.2944064+6833380206.855319j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3596135996.709822+6718196127.3468485j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3547379088.630535+6606867427.334314j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3500046852.7273903+6499202187.029139j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3454072956.742829+6395020882.377176j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3409395374.7143908+6294155402.295723j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3365956044.646349+6196448159.410965j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3323700559.7525325+6101751284.294157j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:65: UserWarning: Newton&#39;s method failed for initial guess 6567315828.203839j: Tolerance of 9.5367431640625e-07j reached. Failed to converge after 24 iterations, value is (-3282577889.0711865+6009925894.33428j).
+  warnings.warn(f&#34;Newton&#39;s method failed for initial guess {x0}: {e_newton}&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3282577889.071195+6009925894.334276j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3242540123.8353643+5920841429.384845j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:65: UserWarning: Newton&#39;s method failed for initial guess 6378225517.567605j: Tolerance of (-4.76837158203125e-07+0j) reached. Failed to converge after 38 iterations, value is (-3203542246.476552+5834375047.194803j).
+  warnings.warn(f&#34;Newton&#39;s method failed for initial guess {x0}: {e_newton}&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3203542246.4765387+5834375047.194812j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3165541919.56969+5750411072.402091j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:65: UserWarning: Newton&#39;s method failed for initial guess 2065506063.8546505j: Tolerance of 9.5367431640625e-07j reached. Failed to converge after 34 iterations, value is (-3128499292.397835+5668840493.543201j).
+  warnings.warn(f&#34;Newton&#39;s method failed for initial guess {x0}: {e_newton}&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3128499292.397852+5668840493.543187j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3092376823.138115+5589560503.127822j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3092376823.138118+5589560503.127829j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3057139114.9518204+5512474076.357481j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3057139114.951834+5512474076.357496j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-3022752764.5087557+5437489584.53555j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+C:\Users\simyz\OneDrive - Alma Mater Studiorum Università di Bologna\Desktop\GitHub\QuLTRA\src\qultra\find_zeros.py:76: UserWarning: Zero point (-2756821802.155334+9366187816.504473j) has k &gt; k_max, excluding it.
+  warnings.warn(f&#34;Zero point {zero_point} has k &gt; k_max, excluding it.&#34;)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">l_l</span><span class="p">,</span> <span class="n">k1</span><span class="p">,</span> <span class="s1">&#39;o-&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Structure 1&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">l_l</span><span class="p">,</span> <span class="n">k2</span><span class="p">,</span> <span class="s1">&#39;o-&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Structure 2&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Distance to $C_\mathrm</span><span class="si">{in}</span><span class="s1">$ [mm]&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$\kappa$ [MHz]&#39;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1">#plt.legend(fontsize=18)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(array([-1.,  0.,  1.,  2.,  3.,  4.,  5.,  6.]),
+ [Text(0, -1.0, &#39;−1&#39;),
+  Text(0, 0.0, &#39;0&#39;),
+  Text(0, 1.0, &#39;1&#39;),
+  Text(0, 2.0, &#39;2&#39;),
+  Text(0, 3.0, &#39;3&#39;),
+  Text(0, 4.0, &#39;4&#39;),
+  Text(0, 5.0, &#39;5&#39;),
+  Text(0, 6.0, &#39;6&#39;)])
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorial_Coupling_qubits_to_feedline_6_1.png" src="../_images/tutorial_Coupling_qubits_to_feedline_6_1.png" />
+</div>
+</div>
+<p>Here, we place the two structures at the positions where <span class="math notranslate nohighlight">\(\kappa\)</span> is maximized and analyze the entire circuit in one shot.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">complex_net</span><span class="o">=</span><span class="p">[</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Cj</span><span class="p">),</span> <span class="c1">#first qubit</span>
+             <span class="n">qu</span><span class="o">.</span><span class="n">J</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Lj</span><span class="p">),</span>
+             <span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">Cg</span><span class="p">),</span> <span class="c1">#coupling capacitor</span>
+             <span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">l</span><span class="p">),</span> <span class="c1">#resonator</span>
+             <span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">Cp</span><span class="p">),</span>
+             <span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">l</span><span class="p">),</span> <span class="c1">#purcell filter</span>
+             <span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mf">20e-15</span><span class="p">),</span> <span class="c1">#coupling capacitance</span>
+             <span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">Cj2</span><span class="p">),</span> <span class="c1">#second qubit</span>
+             <span class="n">qu</span><span class="o">.</span><span class="n">J</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">Lj2</span><span class="p">),</span>
+             <span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="n">Cg2</span><span class="p">),</span>
+             <span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="n">l2</span><span class="o">-</span><span class="mf">0.7e-3</span><span class="p">),</span>
+             <span class="n">qu</span><span class="o">.</span><span class="n">CPW_coupler</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">],[</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">],[</span><span class="mi">15</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">15</span><span class="p">],</span><span class="mf">0.7e-3</span><span class="p">),</span> <span class="c1">#coupler</span>
+             <span class="n">qu</span><span class="o">.</span><span class="n">R</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">50</span><span class="p">),</span>
+             <span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="n">l2</span><span class="o">-</span><span class="mf">0.7e-3</span><span class="p">),</span>
+             <span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="n">Cin</span><span class="p">),</span>
+             <span class="n">qu</span><span class="o">.</span><span class="n">R</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">50</span><span class="p">)]</span>
+
+<span class="nb">complex</span><span class="o">=</span><span class="n">qu</span><span class="o">.</span><span class="n">QCircuit</span><span class="p">(</span><span class="n">complex_net</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+<span class="nb">complex</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
++------+------------+-----------+-----------+
+| Mode | Freq [GHz] |  k [MHz]  |     Q     |
++------+------------+-----------+-----------+
+|  1   |  3.84e+00  | -5.04e-03 | -7.62e+05 |
+|  2   |  4.98e+00  | -2.78e+00 | -1.80e+03 |
+|  3   |  5.50e+00  | -4.55e-05 | -1.21e+08 |
+|  4   |  7.33e+00  | -1.42e+01 | -5.16e+02 |
+|  5   |  7.64e+00  | -5.06e+00 | -1.51e+03 |
++------+------------+-----------+-----------+
+Chi matrix [MHz]:
++------+----------+----------+----------+----------+----------+
+| Mode |    1     |    2     |    3     |    4     |    5     |
++------+----------+----------+----------+----------+----------+
+|  1   | 1.82e+02 | 2.10e+00 | 1.76e-10 | 2.05e-06 | 5.86e-07 |
+|  2   | 2.10e+00 | 6.04e-03 | 9.58e-09 | 1.18e-08 | 3.40e-09 |
+|  3   | 1.76e-10 | 9.58e-09 | 2.11e+02 | 4.55e-01 | 1.20e+00 |
+|  4   | 2.05e-06 | 1.18e-08 | 4.55e-01 | 2.45e-04 | 1.30e-03 |
+|  5   | 5.86e-07 | 3.40e-09 | 1.20e+00 | 1.30e-03 | 1.72e-03 |
++------+----------+----------+----------+----------+----------+
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Intrinsic_Purcell_filter.html" class="btn btn-neutral float-left" title="Fast multiplexed superconducting qubit readout with intrinsic Purcell filtering" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../Documentation.html" class="btn btn-neutral float-right" title="Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Simona Zaccaria, Antonio Gnudi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

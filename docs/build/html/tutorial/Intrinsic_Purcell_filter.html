@@ -1,0 +1,351 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fast multiplexed superconducting qubit readout with intrinsic Purcell filtering &mdash; QuLTRA v0.1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5e3f2911"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="COUPLING QUBITS TO THE FEEDLINE" href="Coupling_qubits_to_feedline.html" />
+    <link rel="prev" title="EXPLOITING HIGHER MODES" href="Exploiting_higher_modes.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            QuLTRA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../Tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Basics.html">BASIC USE OF THE PACKAGE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Basics.html#MODE-FREQUENCIES">MODE FREQUENCIES</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Basics.html#CROSS-KERR-MATRIX">CROSS-KERR MATRIX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Basics.html#DISSIPATION-RATE">DISSIPATION RATE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Qubit_resonator.html">QUBIT COUPLED TO A RESONATOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="JJ_array.html">JOSEPSHON JUNCTION ARRAY</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Exploiting_higher_modes.html">EXPLOITING HIGHER MODES</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Fast multiplexed superconducting qubit readout with intrinsic Purcell filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Coupling_qubits_to_feedline.html">COUPLING QUBITS TO THE FEEDLINE</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../Documentation.html">Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">QuLTRA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../Tutorials.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Fast multiplexed superconducting qubit readout with intrinsic Purcell filtering</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorial/Intrinsic_Purcell_filter.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Fast-multiplexed-superconducting-qubit-readout-with-intrinsic-Purcell-filtering">
+<h1>Fast multiplexed superconducting qubit readout with intrinsic Purcell filtering<a class="headerlink" href="#Fast-multiplexed-superconducting-qubit-readout-with-intrinsic-Purcell-filtering" title="Link to this heading"></a></h1>
+<p>Here we aim to reproduce the main results presented in <a class="reference external" href="https://arxiv.org/abs/2409.04967">this paper</a> by using QuLTRA. The core idea is to design a notch filter at the qubit frequency by coupling the readout resonator and the filter resonator through a mutual inductive (MTL) coupling. The article provides almost all the necessary elements to recreate this circuit in QuLTRA. We extract the qubit capacitance, inductance, and coupling capacitance from the mode frequency and anharmonicity. The
+lengths of the resonators and the coupler, along with the widths and gaps of the transmission lines, are explicitly reported in the paper.</p>
+<p>In the first task, after defining all the design parameters, we will show the Purcell decay as a function of the qubit inductance variation. The results demonstrate that when the qubit frequency is aligned with the notch frequency, the Purcell decay becomes significantly enhanced.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qultra</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">qu</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">e</span> <span class="o">=</span> <span class="mf">1.60217657e-19</span>  <span class="c1"># electron charge</span>
+<span class="n">h</span> <span class="o">=</span> <span class="mf">6.62606957e-34</span>  <span class="c1"># Plank&#39;s</span>
+
+<span class="n">alpha</span><span class="o">=</span><span class="mf">326e6</span>
+<span class="n">f</span><span class="o">=</span><span class="mf">8.032e9</span>
+
+<span class="n">C</span><span class="o">=</span><span class="n">e</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">2</span><span class="o">/</span><span class="n">h</span><span class="o">/</span><span class="n">alpha</span> <span class="c1">#Cj+Cg</span>
+<span class="n">L</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="n">C</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">f</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="c1">#Lj</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="mf">1e-15</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">L</span><span class="o">/</span><span class="mf">1e-9</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+59.41788181803965
+6.608086177178166
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Cj</span><span class="o">=</span><span class="mf">55.5e-15</span>
+<span class="n">L</span><span class="o">=</span><span class="mf">6.6e-9</span>
+<span class="n">Cg</span><span class="o">=</span><span class="mf">4e-15</span>
+<span class="n">Ck</span><span class="o">=</span><span class="mf">10e-15</span> <span class="c1">#coupling to the feedline</span>
+
+<span class="c1">#all these values are available in the original article</span>
+<span class="n">Z0</span><span class="o">=</span><span class="mi">66</span>
+<span class="n">gap</span><span class="o">=</span><span class="p">[</span><span class="mf">7.5</span><span class="p">,</span><span class="mf">7.5</span><span class="p">,</span><span class="mf">7.5</span><span class="p">,</span><span class="mf">7.5</span><span class="p">]</span>
+<span class="n">width</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mf">5.5</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span>
+
+<span class="n">l_r0</span><span class="o">=</span><span class="mf">974e-6</span>
+<span class="n">l_rs</span><span class="o">=</span><span class="mf">1617e-6</span>
+<span class="n">l_p0</span><span class="o">=</span><span class="mf">759e-6</span>
+<span class="n">l_ps</span><span class="o">=</span><span class="mf">1659e-6</span>
+<span class="n">l_c</span><span class="o">=</span><span class="mf">318e-6</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">variations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span> <span class="c1">#percentage variation</span>
+<span class="n">Tp</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">variations</span><span class="p">:</span>
+    <span class="n">Lj</span><span class="o">=</span><span class="n">L</span><span class="o">+</span><span class="n">L</span><span class="o">*</span><span class="n">var</span>
+    <span class="n">net</span><span class="o">=</span><span class="p">[</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Cj</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">J</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Lj</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">Cg</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">l_r0</span><span class="p">,</span><span class="n">Z0</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW_coupler</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],</span><span class="n">gap</span><span class="p">,</span><span class="n">width</span><span class="p">,</span><span class="n">l_c</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">l_rs</span><span class="p">,</span><span class="n">Z0</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="n">l_p0</span><span class="p">,</span><span class="n">Z0</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">l_ps</span><span class="p">,</span><span class="n">Z0</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="n">Ck</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">R</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">50</span><span class="p">)]</span>
+    <span class="n">complete_notch</span><span class="o">=</span><span class="n">qu</span><span class="o">.</span><span class="n">QCircuit</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">k</span><span class="o">=</span><span class="n">complete_notch</span><span class="o">.</span><span class="n">kappa</span><span class="p">()</span>
+    <span class="n">Tp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="p">(</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mf">1e6</span><span class="p">))</span> <span class="c1">#take qubit kappa</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">variations</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">Tp</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Percentage qubit inductance variation&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Qubit Purcell decay [s]&#39;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="c1">#plt.title(&#39;Qubit Purcell decay vs Qubit inductance Variation&#39;,fontsize=18)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorial_Intrinsic_Purcell_filter_5_0.png" src="../_images/tutorial_Intrinsic_Purcell_filter_5_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">i</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Tp</span><span class="p">))</span>
+<span class="n">Lj</span><span class="o">=</span><span class="n">L</span><span class="o">+</span><span class="n">L</span><span class="o">*</span><span class="n">variations</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+<span class="n">net</span><span class="o">=</span><span class="p">[</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Cj</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">J</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Lj</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">Cg</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">l_r0</span><span class="p">,</span><span class="n">Z0</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW_coupler</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],</span><span class="n">gap</span><span class="p">,</span><span class="n">width</span><span class="p">,</span><span class="n">l_c</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">l_rs</span><span class="p">,</span><span class="n">Z0</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="n">l_p0</span><span class="p">,</span><span class="n">Z0</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">l_ps</span><span class="p">,</span><span class="n">Z0</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">C</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="n">Ck</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">R</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">50</span><span class="p">)]</span>
+<span class="n">complete_notch</span><span class="o">=</span><span class="n">qu</span><span class="o">.</span><span class="n">QCircuit</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">complete_notch</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Purcell decay time for the optimal resonator length: &#39;</span><span class="p">,</span> <span class="n">Tp</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s1">&#39;s&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
++------+------------+-----------+-----------+
+| Mode | Freq [GHz] |  k [MHz]  |     Q     |
++------+------------+-----------+-----------+
+|  1   |  8.19e+00  | -1.94e-09 | -4.21e+12 |
+|  2   |  1.01e+01  | -6.40e-02 | -1.57e+05 |
+|  3   |  1.05e+01  | -1.89e+01 | -5.53e+02 |
++------+------------+-----------+-----------+
+Chi matrix [MHz]:
++------+----------+----------+----------+
+| Mode |    1     |    2     |    3     |
++------+----------+----------+----------+
+|  1   | 3.19e+02 | 6.65e+00 | 2.80e-02 |
+|  2   | 6.65e+00 | 3.47e-02 | 2.92e-04 |
+|  3   | 2.80e-02 | 2.92e-04 | 6.14e-07 |
++------+----------+----------+----------+
+Purcell decay time for the optimal resonator length:  81.84390238332135 s
+</pre></div></div>
+</div>
+<p>The article shows $ Z_{12} $ of the two-port composed only of the two coupled resonators. In the graph, the resonant frequencies of the two resonators and the notch frequency can be clearly identified. Here, we aim to reproduce the same result. After constructing the circuit, we will compute the total admittance matrix, from which we will extract the impedance matrix of the two-port, in order to demonstrate that QuLTRA provides consistent results.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Z0</span><span class="o">=</span><span class="mi">66</span>
+<span class="n">gap</span><span class="o">=</span><span class="p">[</span><span class="mf">7.5</span><span class="p">,</span><span class="mf">7.5</span><span class="p">,</span><span class="mf">7.5</span><span class="p">,</span><span class="mf">7.5</span><span class="p">]</span>
+<span class="n">width</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mf">5.5</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span>
+
+<span class="n">l_r0</span><span class="o">=</span><span class="mf">974e-6</span>
+<span class="n">l_rs</span><span class="o">=</span><span class="mf">1617e-6</span>
+<span class="n">l_p0</span><span class="o">=</span><span class="mf">759e-6</span>
+<span class="n">l_ps</span><span class="o">=</span><span class="mf">1659e-6</span>
+<span class="n">l_c</span><span class="o">=</span><span class="mf">318e-6</span>
+
+<span class="n">net</span><span class="o">=</span><span class="p">[</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">l_r0</span><span class="p">,</span><span class="n">Z0</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW_coupler</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span><span class="n">gap</span><span class="p">,</span><span class="n">width</span><span class="p">,</span><span class="n">l_c</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">l_rs</span><span class="p">,</span><span class="n">Z0</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="n">l_p0</span><span class="p">,</span><span class="n">Z0</span><span class="p">),</span><span class="n">qu</span><span class="o">.</span><span class="n">CPW</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">l_ps</span><span class="p">,</span><span class="n">Z0</span><span class="p">)]</span>
+<span class="n">eth_notch</span><span class="o">=</span><span class="n">qu</span><span class="o">.</span><span class="n">QCircuit</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">12</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">frequencies</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mf">0.001</span><span class="p">)</span>
+<span class="c1">#frequencies=np.linspace(6,12,5001)</span>
+<span class="n">port</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span>
+<span class="n">Z_12</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">frequencies</span><span class="p">:</span>
+    <span class="n">Y</span><span class="o">=</span><span class="n">eth_notch</span><span class="o">.</span><span class="n">build_total_Y_matrix</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mf">1e9</span><span class="o">*</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">Z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
+    <span class="n">Z_submatrix</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">port</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">port</span><span class="p">)),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">port</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">port</span><span class="p">)):</span>
+            <span class="n">Z_submatrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="n">Z</span><span class="p">[</span><span class="n">port</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">port</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span>
+
+    <span class="n">Z_12</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">20</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">((</span><span class="nb">abs</span><span class="p">(</span><span class="n">Z_submatrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imag</span><span class="p">))))</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">Z_12</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+
+
+<span class="c1"># Etichette e legenda</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency [GHz]&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;18&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$Z_</span><span class="si">{12}</span><span class="s1">$ [dB]&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;18&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1">#plt.tight_layout()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;18&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;18&#39;</span><span class="p">)</span>
+
+
+<span class="c1"># Mostra il grafico</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorial_Intrinsic_Purcell_filter_10_0.png" src="../_images/tutorial_Intrinsic_Purcell_filter_10_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Exploiting_higher_modes.html" class="btn btn-neutral float-left" title="EXPLOITING HIGHER MODES" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Coupling_qubits_to_feedline.html" class="btn btn-neutral float-right" title="COUPLING QUBITS TO THE FEEDLINE" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Simona Zaccaria, Antonio Gnudi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
