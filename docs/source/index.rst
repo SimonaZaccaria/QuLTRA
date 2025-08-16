@@ -31,7 +31,7 @@ For inquiries or to contribute to the project, please contact Simona at simona.z
 You are also welcome to collaborate through the `GitHub <https://github.com/SimonaZaccaria/QuLTRA>`_ page by opening issues or submitting pull requests.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Contents:
 
    Installation
