@@ -4,19 +4,21 @@ Installation
 
 The reccommended way to install QuLTRA is via pip by running the following command in your terminal:
 
-```bash
-pip install qultra
-```
+.. code-block::
+    
+    pip install qultra
+
 
 If you want to install the latest development version, you can clone the repository and install it using pip:
 
-```bash
-git clone https://github.com/SimonaZaccaria/QuLTRA.git
-cd QuLTRA
-pip install -e .
-```
+.. code-block:: 
+
+   git clone https://github.com/SimonaZaccaria/QuLTRA.git
+   cd QuLTRA
+   pip install -e .
+
 Requirements
-=============
+================
 
 QuLTRA requires Python 3.10 or later. The following packages are required:
 
