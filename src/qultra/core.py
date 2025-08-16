@@ -205,14 +205,20 @@ def zero_algo_complete(admittance,starting_point, final_point):
     return minimum_points
 '''
 class C:
-    def __init__(self,node_minus,node_plus,C_value):
-        """
-        Represents a capacitor component
+    """
+    Represent a capacitor component
 
-        Parameters:
-        node_minus, node_plus: The nodes to which the component is connected
-        C_value: Capacitance value [F]
-        """
+    Parameters
+    ----------
+    node_minus : int
+        The node to which the negative terminal is connected
+    node_plus : int
+        The node to which the positive terminal is connected
+    C_value : float
+        Capacitance value [F]
+    """
+    def __init__(self,node_minus,node_plus,C_value):
+ 
         self.node_minus=node_minus
         self.node_plus=node_plus
         self.C_value=C_value #[udm]=F
@@ -220,21 +226,33 @@ class C:
     def admittance(self,z):
         """
         Calculate the admittance of a capacitor C
-        Y=s*C
-        Args:
-            s:complex variable
-        Returns:
-            complex admittance Y
-        """    
+
+        Y = z * C
+
+        Parameters
+        ----------
+        z : complex
+            Complex variable (complex frequency)
+
+        Returns
+        -------
+        Y : complex
+            Complex admittance
+        """
         return z*self.C_value
     
 class L:
     """
     Represents an inductor component
 
-    Parameters:
-    node_minus, node_plus: The nodes to which the component is connected
-    L_value: Inductance value [H]
+    Parameters
+    ----------
+    node_minus : int
+        The node to which the negative terminal is connected
+    node_plus : int
+        The node to which the positive terminal is connected
+    L_value: float
+        Inductance value [H]
     """
     def __init__(self,node_minus,node_plus,L_value):
         self.node_minus=node_minus
@@ -244,11 +262,18 @@ class L:
     def admittance(self,z):
         """
         Calculate the admittance of an inductor L
-        Y=1/s*L
-        Args:
-            s:complex variable
-        Returns:
-            complex admittance Y
+
+        Y = 1/s*L
+
+        Parameters
+        ----------
+        z : complex
+            Complex variable (complex frequency)
+
+        Returns
+        -------
+        Y : complex
+            Complex admittance
         """    
         return 1/(z*self.L_value)
     
@@ -256,9 +281,14 @@ class R:
     """
     Represents a resistor component
 
-    Parameters:
-    node_minus, node_plus: The nodes to which the component is connected
-    R_value: Resistance value [Ohm]
+    Parameters
+    ----------
+    node_minus : int
+        The node to which the negative terminal is connected
+    node_plus : int
+        The node to which the positive terminal is connected
+    R_value: float
+        Resistance value [Ohm]
     """
     def __init__(self,node_minus,node_plus,R_value):
         self.node_minus=node_minus
@@ -268,19 +298,30 @@ class R:
     def admittance(self,z=None):
         """
         Calculate the admittance of a resistor R
-        Y=1/R
-        Returns:
-            complex admittance Y
+        
+        Y = 1/R
+
+        Returns
+        -------
+        Y : complex
+            Complex admittance
         """    
         return 1/self.R_value
 class J:
     """
     Represents a Josepshon junction component
 
-    Parameters:
-    node_minus, node_plus: The nodes to which the component is connected
-    J_values: LInear inductance value [H]
-    N: Number of junctions (N!=1 implements a JJ array)
+    Parameters
+    ----------
+    node_minus : int
+        The node to which the negative terminal is connected
+    node_plus : int
+        The node to which the positive terminal is connected
+    J_values: float
+        Linear inductance value [H]
+    N: int
+        Number of junctions. Default is 1.
+        (N!=1 implements a JJ array)
     """
     def __init__(self,node_minus,node_plus,J_value,N=1):
         self.node_minus=node_minus
@@ -290,18 +331,30 @@ class J:
     
     def admittance(self,z):
         """
-        Calculate the admittance of an inductor L
-        Y=1/s*L
-        Args:
-            z:complex variable
-        Returns:
-            complex admittance Y
+        Calculate the admittance of the linear inductor J associated to the junction
+        
+        Y = 1/s*J
+
+        Parameters
+        ----------
+        z : complex
+            Complex variable (complex frequency)
+
+        Returns
+        -------
+        Y : complex
+            Complex admittance
         """    
         return 1/(z*self.J_value)
     
     def Ej(self):
         """
         Calculate the Josepshon energy of the junction
+
+        Returns
+        -------
+        Ej : float
+            Josephson energy.
         """
         return (phi0/(2*np.pi))**2/self.J_value/h
 
@@ -309,10 +362,16 @@ class CPW:
     """
     Represents a CPW component
 
-    Parameters:
-    node_minus, node_plus: The nodes to which the component is connected
-    l: Length of the line
-    Z0: Charateristic impedence
+    Parameters
+    ----------
+    node_minus : int
+        The node to which the negative terminal is connected
+    node_plus : int
+        The node to which the positive terminal is connected
+    l: float
+        Length of the line [m]
+    Z0: float
+        Charateristic impedence [Ohm]. Default is 50 Ohm
     """
     def __init__(self,node_minus,node_plus,l,Z0=50):
         self.node_minus=node_minus
@@ -325,9 +384,13 @@ class CPW:
         """
         Construct the complex admittance matrix of a cpw
 
-        Args:
-            z: complex variable
-        Returns:
+        Parameters
+        ----------
+        z : complex
+            Complex variable (complex frequency)
+        Returns
+        -------
+        Y_matrix: numpy array    
             complex admittance matrix 
         """
         #Euler exponential
@@ -351,7 +414,23 @@ class CPW:
     
     def current(self,V_0,V_l,z,x):
         """
-        Calculate current in a cpw given the voltage node values
+        Calculate the current in a CPW given the voltage node values.
+
+        Parameters
+        ----------
+        V_0 : complex
+            Voltage at the start node.
+        V_l : complex
+            Voltage at the end node.
+        z : complex
+            Complex variable (complex frequency).
+        x : float
+            Position along the CPW.
+
+        Returns
+        -------
+        I : complex
+            Calculated current at position x.
         """
         exp_z=np.exp(self.l*z/v)
         exp_mz=np.exp(-self.l*z/v)
@@ -364,7 +443,21 @@ class CPW:
     
     def inductive_energy(self,V_0,V_l,z):
         """
-        Calculate the inductive energy stored in a cpw
+        Calculate the inductive energy stored in a CPW.
+
+        Parameters
+        ----------
+        V_0 : complex
+            Voltage at the start node.
+        V_l : complex
+            Voltage at the end node.
+        z : complex
+            Complex variable (complex frequency).
+
+        Returns
+        -------
+        E : complex
+            Inductive energy stored in the CPW.
         """
         a=0
         b=self.l
@@ -376,6 +469,69 @@ class CPW:
 
 
 class CPW_coupler:
+    """
+    Represents a 4-node CPW (coplanar waveguide) coupler.
+
+    This class initializes a CPW coupler component with its node connections,
+    gaps, individual CPWs, and physical length. It also computes the 
+    capacitance and inductance matrices upon initialization.
+
+    Node ordering (top wiev)
+     ::
+
+        1----------2
+
+        3----------4
+
+    The diagrams below illustrate the widths and gaps of the CPW coupler, both in the case without a central ground plane (1) and in the 
+    case with a ground plane between the CPW lines (2).
+
+    (1)
+     ::
+
+        GND                                           GND
+            |       |        |      |        |        |
+            |       |        |      |        |        |
+            |       |________|      |________|        |  
+              gap0    cpw0     gap1    cpw1    gap2
+
+
+    (2)
+     ::
+
+        GND                                                             GND
+            |       |        |      |      |        |       |       |
+            |       |        |      |      |        |       |       |
+            |       |________|      |______|        |_______|       |
+              gap0    cpw0     gap1    cpw1   gap2    cpw2    gap3
+
+
+
+    Parameters
+    ----------
+    nodes : list of int
+        List of 4 nodes to which the coupler is connected. Must have length 4.
+    gap : list of float
+        List of gaps between CPWs [um].
+    cpw : list
+        List of CPW segments' width [um]
+    l : float
+        Physical length of the coupler [m].
+
+    Attributes
+    ----------
+    C : ndarray
+        Capacitance matrix computed from the CPW configuration.
+    L : ndarray
+        Inductance matrix computed from the CPW configuration.
+
+    Raises
+    ------
+    ValueError
+        If `nodes` does not contain exactly 4 elements, or if `gap` does not
+        have length equal to `len(cpw) + 1`.
+    """
+
     def __init__(self,nodes,gap,cpw,l):
         if len(nodes)!=4:
             raise ValueError ("The component must be connected to 4 nodes")
@@ -389,7 +545,9 @@ class CPW_coupler:
         self.l=l #[udm]=m
         self.C, self.L = self.CL_matrices()
 
+    
     def branch_point_coordinates(self):
+        ''' '''
         gap=self.gap
         cpw=self.cpw
         a=[] #branch points destri
@@ -533,7 +691,9 @@ class CPW_coupler:
         c_coordinates=[complex(x) for x in sol.x]
         return c_coordinates           
 
+    
     def CL_matrices(self):
+        ''' '''
         gap=self.gap
         cpw=self.cpw
         a,b=self.branch_point_coordinates()
@@ -552,6 +712,19 @@ class CPW_coupler:
         return C,L
 
     def Y(self,z):
+        """
+        Construct the complex admittance matrix of a cpw coupler
+
+        Parameters
+        ----------
+        z : complex
+            Complex variable (complex frequency)
+        Returns
+        -------
+        Y_matrix: numpy array    
+            complex admittance matrix 
+        """
+
         l = self.l
         C= self.C
 
@@ -586,53 +759,94 @@ class CPW_coupler:
     
     
     def inductive_energy(self,V,z):
-            """
-            Calculate the inductive energy stored in a cpw
-            """
-            a=0
-            b=self.l
-            L=self.L   
+        """
+        Calculate the inductive energy stored in a CPW.
 
-            def integrand(x):
-                I=self.current(V,z,x)
-                dW=(I.conj().T @ L @ I)/2
-                return np.real(dW.item())
-            E, _ = scipy.integrate.quad(integrand, a, b) #integrate by using scipy and taking the first value of the tuple
-            return E
+        Parameters
+        ----------
+
+        V : complex array
+            Voltage at nodes.
+        z : complex
+            Complex variable (complex frequency).
+
+        Returns
+        -------
+        E : complex
+            Inductive energy stored in the CPW.
+
+        """
+        a=0
+        b=self.l
+        L=self.L   
+
+        def integrand(x):
+            I=self.current(V,z,x)
+            dW=(I.conj().T @ L @ I)/2
+            return np.real(dW.item())
+        E, _ = scipy.integrate.quad(integrand, a, b) #integrate by using scipy and taking the first value of the tuple
+        return E
     
     def current(self,V,z,x):
-            """
-            Calculate current in a cpw given the voltage node values
-            """
-            C = self.C
+            
+        """
+        Calculate the current in a CPW coupler given the voltage node values.
 
-            Z_matrix_inv = v* C
-            dim = Z_matrix_inv.shape[0]
-            exp_z=np.exp(self.l*z/v)
-            exp_mz=np.exp(-self.l*z/v)
-            imag_part=exp_z-exp_mz
+        Parameters
+        ----------
+        V : complex array
+            Voltage at  nodes.
+        z : complex
+            Complex variable (complex frequency).
+        x : float
+            Position along the CPW coupler.
 
-            V_plus=np.zeros((dim,1),dtype=np.complex128)
-            V_minus=np.zeros((dim,1),dtype=np.complex128)
+        Returns
+        -------
+        I : complex
+            Calculated current at position x.
+        """
+        C = self.C
 
-            for j in range(dim):
-                V_plus[j,0]=(V[2*j]*exp_z-V[2*j+1])/imag_part
-                V_minus[j,0]=(-V[2*j]*exp_mz+V[2*j+1])/imag_part
+        Z_matrix_inv = v* C
+        dim = Z_matrix_inv.shape[0]
+        exp_z=np.exp(self.l*z/v)
+        exp_mz=np.exp(-self.l*z/v)
+        imag_part=exp_z-exp_mz
 
-            I_plus=Z_matrix_inv @ V_plus
-            I_minus=-Z_matrix_inv @ V_minus
+        V_plus=np.zeros((dim,1),dtype=np.complex128)
+        V_minus=np.zeros((dim,1),dtype=np.complex128)
 
-            I = I_plus * np.exp(-x * z / v) + I_minus * np.exp(x * z / v)
+        for j in range(dim):
+            V_plus[j,0]=(V[2*j]*exp_z-V[2*j+1])/imag_part
+            V_minus[j,0]=(-V[2*j]*exp_mz+V[2*j+1])/imag_part
 
-            return I      
+        I_plus=Z_matrix_inv @ V_plus
+        I_minus=-Z_matrix_inv @ V_minus
+
+        I = I_plus * np.exp(-x * z / v) + I_minus * np.exp(x * z / v)
+
+        return I      
 
 class QCircuit:
     """
-    Represents a quantum circuit
+    Represents a quantum circuit.
 
-    Parameters:
-    netlist: the list of component instances that define the circuit
-    f_starting_point, f_end_point: the start and end frequencies of the interval over which the circuit is analyzed
+    Parameters
+    ----------
+    netlist : list
+        List of component instances that define the circuit.
+    f_starting_point : float
+        The start frequency of the interval over which the circuit is analyzed.
+    f_end_point : float
+        The end frequency of the interval over which the circuit is analyzed.
+
+    Attributes
+    ----------
+    modes : list of lists of length 2
+        Each element is a list of two values:
+            - The first value represents the eigenmode frequency in GHz.
+            - The second value represents the eigenmode dissipation rate in MHz.
     """
 
     def __init__(self, netlist, f_starting_point,f_end_point):
@@ -651,6 +865,7 @@ class QCircuit:
         
 
     def shorts(self):
+        ''' '''
         """
         Check if the circuit is shorted
         """
@@ -717,6 +932,7 @@ class QCircuit:
     '''
 
     def is_connected(self):
+        ''' '''
         """
         Check if the circuit is connected
         """
@@ -791,12 +1007,15 @@ class QCircuit:
         Builds the total admittance matrix Y for the circuit,
         assuming node 0 is ground and should be excluded from the final matrix.
         
-        Args:
-            components: list of component instances (C, L, R, J, CPW)
-            z: complex variable (e.g., s = jω or k + jω)
+        Parameters
+        ----------
+            z: complex 
+                complex variable (e.g., z = jω or k + jω)
         
-        Returns:
-            Reduced admittance matrix (excluding ground node 0)
+        Returns
+        -------
+            Y_reduced: numpy matrix
+                Reduced admittance matrix (excluding ground node 0)
         """
         components=self.netlist
         # Determine the highest node number
@@ -879,6 +1098,7 @@ class QCircuit:
         return Y_reduced
 
     def characteristic_polynomial_reduced(self,z):
+        ''' '''
         nodes_to_delete=[]
         for comp in self.netlist:
             if isinstance(comp,R):
@@ -916,6 +1136,7 @@ class QCircuit:
         return True
     '''
     def characteristic_polynomial(self,z):
+        ''' '''
         Y_matrix=self.build_total_Y_matrix(z)
         det_Y=np.linalg.det(Y_matrix)
         K = scipy.linalg.null_space(Y_matrix,rcond=1e-10)
@@ -923,6 +1144,7 @@ class QCircuit:
         return det_Y, Y_matrix.shape[0],dim_kernel
     
     def there_is_R(self):
+        ''' '''
         """
         Check if there are resistive components
         """
@@ -933,6 +1155,7 @@ class QCircuit:
         return False
     
     def eigenvalues(self,f_starting_point, f_end_point):
+        ''' '''
         """
         Find the eigenfrequencies (modes) of the circuit
         """
@@ -950,6 +1173,7 @@ class QCircuit:
 
         return modes
     def eigenvectors(self):
+        ''' '''
         """
         Computes the eigenvectors (null space) of the total admittance matrix
         at each eigenfrequency found in the range.
@@ -1010,6 +1234,7 @@ class QCircuit:
         return circuit_eigenvectors
     
     def complex_frequencies(self):
+        ''' '''
         complex_f=[]
         #circuit_eigenvalues=self.eigenvalues(f_starting_point, f_end_point)
         circuit_eigenvalues=self.modes
@@ -1024,6 +1249,7 @@ class QCircuit:
         return complex_f
 
     def total_inductive_energy(self):
+        ''' '''
         """
         Calculate the total inductive energy stored into the circuit
         """
@@ -1058,9 +1284,12 @@ class QCircuit:
 
     def run_epr(self):
         """
-        Implement energy participation ratio method to calculate Cross-Kerr matrix
-        Returns:
-            Cross-Kerr matrix
+       Compute the Cross-Kerr matrix using the energy participation ratio method.
+
+        Returns
+        -------
+        chi: numpy.ndarray
+            The Cross-Kerr matrix of the system [MHz].
         """
         circuit_eigenvalues=self.complex_frequencies()
         f=[z.imag/2/np.pi for z in circuit_eigenvalues]
@@ -1103,7 +1332,12 @@ class QCircuit:
 
     def mode_frequencies(self):
         """
-        Returns the frequencies of the modes of the circuit
+        Returns the frequencies of the modes of the circuit [GHz]
+
+        Returns
+        -------
+        frequencies: list
+            Mode frequencies in GHz.
         """
         #eigen=self.eigenvalues(f_starting_point, f_end_point)
         eigen=self.modes
@@ -1119,7 +1353,12 @@ class QCircuit:
 
     def kappa(self):
         """
-        Returns the kappa of the modes of the circuit
+        Returns the kappa of the modes of the circuit [MHz]
+
+        Returns
+        -------
+        kappa: list
+            Mode dissipation rates in MHz.
         """
         #eigen=self.eigenvalues(f_starting_point, f_end_point)
         eigen=self.modes
