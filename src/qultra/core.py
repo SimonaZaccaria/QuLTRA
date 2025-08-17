@@ -318,7 +318,7 @@ class J:
     node_plus : int
         The node to which the positive terminal is connected
     J_values: float
-        Linear inductance value [H]
+        Total linear inductance value [H]. For a junction array, J denotes the inductance of the whole array, not of an individual junction.
     N: int
         Number of junctions. Default is 1.
         (N!=1 implements a JJ array)
