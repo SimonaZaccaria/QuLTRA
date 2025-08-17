@@ -43,9 +43,6 @@ jobs:
         run: |
           sphinx-build -b html docs/source docs/build
 
-      - name: Check autodoc installation
-        run: |
-          python -c "from sphinx.ext import autodoc; print(f'Autodoc version: {autodoc.__version__}')"
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
