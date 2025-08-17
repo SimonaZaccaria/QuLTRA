@@ -1,5 +1,5 @@
 Circuit analysis
-==========
+===================
 
 Starting from a list of components, you can create a quantum circuit that can be analyzed using the functions provided by the `QCircuit` class. 
 

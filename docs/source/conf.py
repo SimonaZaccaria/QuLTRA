@@ -28,7 +28,16 @@ extensions = [
 templates_path = ['_templates']
 exclude_patterns = []
 
+# Aggiungi questa configurazione per autodoc
+autodoc_default_options = {
+    'members': True,
+    'show-inheritance': True
+}
 
+# Abilita supporto JavaScript (importante per GitHub Pages)
+html_js_files = [
+    'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'
+]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
