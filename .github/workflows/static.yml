@@ -31,7 +31,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install sphinx nbsphinx myst-parser sphinx-rtd-theme numpydoc
+          pip install sphinx nbsphinx myst-parser sphinx-rtd-theme numpydoc sphinx-autodoc-typehints sphinx-autobuild sphinxcontrib-jquery
+          
       
       - name: Install Pandoc
         run: |
@@ -41,6 +42,10 @@ jobs:
       - name: Build HTML
         run: |
           sphinx-build -b html docs/source docs/build
+
+      - name: Check autodoc installation
+        run: |
+          python -c "from sphinx.ext import autodoc; print(f'Autodoc version: {autodoc.__version__}')"
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
