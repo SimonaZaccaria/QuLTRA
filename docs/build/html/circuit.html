@@ -52,6 +52,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#qultra.QCircuit"><code class="docutils literal notranslate"><span class="pre">QCircuit</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#qultra.QCircuit.modes"><code class="docutils literal notranslate"><span class="pre">QCircuit.modes</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qultra.QCircuit.build_total_Y_matrix"><code class="docutils literal notranslate"><span class="pre">QCircuit.build_total_Y_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qultra.QCircuit.get_Z_submatrix"><code class="docutils literal notranslate"><span class="pre">QCircuit.get_Z_submatrix()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qultra.QCircuit.kappa"><code class="docutils literal notranslate"><span class="pre">QCircuit.kappa()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qultra.QCircuit.mode_frequencies"><code class="docutils literal notranslate"><span class="pre">QCircuit.mode_frequencies()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qultra.QCircuit.run_epr"><code class="docutils literal notranslate"><span class="pre">QCircuit.run_epr()</span></code></a></li>
@@ -145,6 +146,28 @@ assuming node 0 is ground and should be excluded from the final matrix.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="qultra.QCircuit.get_Z_submatrix">
+<span class="sig-name descname"><span class="pre">get_Z_submatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qultra/core.html#QCircuit.get_Z_submatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qultra.QCircuit.get_Z_submatrix" title="Link to this definition"></a></dt>
+<dd><p>Compute the impedance submatrix corresponding to a given set of nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nodes</strong> (<em>list</em><em> of </em><em>int</em>) – List of node indices (1-based numbering) for which the impedance
+submatrix is extracted.</p></li>
+<li><p><strong>f</strong> (<em>float</em>) – Frequency in GHz at which the impedance matrix is computed.</p></li>
+<li><p><strong>k</strong> (<em>float</em><em>, </em><em>optional</em>) – Dissipation rate in MHz at which the impedance matrix is computed. Default is 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Z_submatrix</strong> – Impedance submatrix corresponding to the selected nodes.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray of complex, shape (len(nodes), len(nodes))</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="qultra.QCircuit.kappa">
 <span class="sig-name descname"><span class="pre">kappa</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qultra/core.html#QCircuit.kappa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qultra.QCircuit.kappa" title="Link to this definition"></a></dt>
 <dd><p>Returns the kappa of the modes of the circuit [MHz]</p>
@@ -176,12 +199,14 @@ assuming node 0 is ground and should be excluded from the final matrix.</p>
 <dt class="sig sig-object py" id="qultra.QCircuit.run_epr">
 <span class="sig-name descname"><span class="pre">run_epr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qultra/core.html#QCircuit.run_epr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qultra.QCircuit.run_epr" title="Link to this definition"></a></dt>
 <dd><p>Compute the Cross-Kerr matrix using the energy participation ratio method.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>chi: numpy.ndarray</dt><dd><p>The Cross-Kerr matrix of the system [MHz].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>chi</strong> – The Cross-Kerr matrix of the system [MHz].</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
 </dd>
 </dl>
-</div></blockquote>
 </dd></dl>
 
 <dl class="py method">

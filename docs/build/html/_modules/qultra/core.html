@@ -1416,7 +1416,7 @@
 <a class="viewcode-back" href="../../circuit.html#qultra.QCircuit.run_epr">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">run_epr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">       Compute the Cross-Kerr matrix using the energy participation ratio method.</span>
+<span class="sd">        Compute the Cross-Kerr matrix using the energy participation ratio method.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1571,7 +1571,27 @@
         <span class="k">return</span></div>
 
 
+<div class="viewcode-block" id="QCircuit.get_Z_submatrix">
+<a class="viewcode-back" href="../../circuit.html#qultra.QCircuit.get_Z_submatrix">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_Z_submatrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">port</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the impedance submatrix corresponding to a given set of nodes.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nodes : list of int</span>
+<span class="sd">            List of node indices (1-based numbering) for which the impedance </span>
+<span class="sd">            submatrix is extracted.</span>
+<span class="sd">        f : float</span>
+<span class="sd">            Frequency in GHz at which the impedance matrix is computed.</span>
+<span class="sd">        k : float, optional</span>
+<span class="sd">            Dissipation rate in MHz at which the impedance matrix is computed. Default is 0.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Z_submatrix : ndarray of complex, shape (len(nodes), len(nodes))</span>
+<span class="sd">            Impedance submatrix corresponding to the selected nodes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">z</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mf">1e6</span><span class="o">*</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mf">1e9</span><span class="o">*</span><span class="n">f</span>
         <span class="n">Y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">build_total_Y_matrix</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
         <span class="n">Z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
@@ -1580,6 +1600,7 @@
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">port</span><span class="p">)):</span>
                 <span class="n">Z_submatrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="n">Z</span><span class="p">[</span><span class="n">port</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">port</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">Z_submatrix</span></div>
+</div>
 
 
 

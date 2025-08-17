@@ -1284,7 +1284,7 @@ class QCircuit:
 
     def run_epr(self):
         """
-       Compute the Cross-Kerr matrix using the energy participation ratio method.
+        Compute the Cross-Kerr matrix using the energy participation ratio method.
 
         Returns
         -------
@@ -1424,6 +1424,24 @@ class QCircuit:
         return
 
     def get_Z_submatrix(self,port,f,k=0):
+        """
+        Compute the impedance submatrix corresponding to a given set of nodes.
+
+        Parameters
+        ----------
+        nodes : list of int
+            List of node indices (1-based numbering) for which the impedance 
+            submatrix is extracted.
+        f : float
+            Frequency in GHz at which the impedance matrix is computed.
+        k : float, optional
+            Dissipation rate in MHz at which the impedance matrix is computed. Default is 0.
+
+        Returns
+        -------
+        Z_submatrix : ndarray of complex, shape (len(nodes), len(nodes))
+            Impedance submatrix corresponding to the selected nodes.
+        """
         z=2*np.pi*1e6*k + 1j*2*np.pi*1e9*f
         Y=self.build_total_Y_matrix(z)
         Z=np.linalg.inv(Y)
