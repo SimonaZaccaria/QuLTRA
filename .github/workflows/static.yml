@@ -31,7 +31,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install sphinx nbsphinx myst-parser sphinx-rtd-theme numpydoc sphinx-autodoc-typehints sphinx-autobuild sphinxcontrib-jquery
+          pip install sphinx nbsphinx myst-parser sphinx-rtd-theme numpydoc sphinx-autodoc-typehints sphinx-autobuild 
           
       
       - name: Install Pandoc

@@ -6,7 +6,9 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-
+import os
+import sys
+sys.path.insert(0, os.path.abspath('../../src'))
 
 project = 'QuLTRA'
 copyright = '2025, Simona Zaccaria, Antonio Gnudi'
@@ -34,10 +36,6 @@ autodoc_default_options = {
     'show-inheritance': True
 }
 
-# Abilita supporto JavaScript (importante per GitHub Pages)
-html_js_files = [
-    'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'
-]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
