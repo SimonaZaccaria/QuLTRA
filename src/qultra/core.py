@@ -1429,7 +1429,7 @@ class QCircuit:
 
         Parameters
         ----------
-        nodes : list of int
+        port : list of int
             List of node indices (1-based numbering) for which the impedance 
             submatrix is extracted.
         f : float
