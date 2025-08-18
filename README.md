@@ -1,4 +1,5 @@
-[![DOI](https://zenodo.org/badge/10.5281/zenodo.16897531.svg)](https://doi.org/10.5281/zenodo.16897531)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16897531.svg)](https://doi.org/10.5281/zenodo.16897531)
+
 
 ## QuLTRA:  Quantum hybrid Lumped and TRansmission lines circuits Analyzer
 
