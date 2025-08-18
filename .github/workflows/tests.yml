@@ -27,5 +27,8 @@ jobs:
         pip install numpy scipy tabulate mpmath pytest
 
     # 4. Esegui i test
-    - name: Run tests
-      run: pytest
+    - name: Set PYTHONPATH
+      run: |
+        export PYTHONPATH=$PYTHONPATH:$(pwd)/src
+        pytest
+
