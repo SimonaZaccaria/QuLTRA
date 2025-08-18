@@ -2,6 +2,9 @@
 [![PyPI version](https://img.shields.io/pypi/v/qultra.svg)](https://pypi.org/project/qultra/)
 ![License](https://img.shields.io/github/license/SimonaZaccaria/QuLTRA)
 [![Docs](https://img.shields.io/badge/docs-online-blue.svg)](https://simonazaccaria.github.io/QuLTRA/)
+[![Build Status](https://github.com/SimonaZaccaria/QuLTRA/actions/workflows/tests.yml/badge.svg)](https://github.com/SimonaZaccaria/QuLTRA/actions)
+
+
 
 
 
