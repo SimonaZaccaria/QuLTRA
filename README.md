@@ -1,6 +1,8 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16897531.svg)](https://doi.org/10.5281/zenodo.16897531)
 [![PyPI version](https://img.shields.io/pypi/v/qultra.svg)](https://pypi.org/project/qultra/)
 ![License](https://img.shields.io/github/license/SimonaZaccaria/QuLTRA)
+[![Docs](https://img.shields.io/badge/docs-online-blue.svg)](https://simonazaccaria.github.io/QuLTRA/)
+
 
 
 ## QuLTRA:  Quantum hybrid Lumped and TRansmission lines circuits Analyzer
