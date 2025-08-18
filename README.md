@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16897531)](https://doi.org/10.5281/zenodo.16897531)
+
 ## QuLTRA:  Quantum hybrid Lumped and TRansmission lines circuits Analyzer
 
 QuLTRA is an open-source Python library for the analysis of superconducting circuits that include both lumped elements (capacitors, inductors, Josephson junctions, resistors) and distributed components (such as coplanar waveguides and CPW couplers).
@@ -11,6 +13,11 @@ The library provides tools to compute:
 -The cross-Kerr matrix, describing the nonlinear interactions between modes.
 
 QuLTRA is designed to support fast, layout-independent modeling in the early design stages, before full electromagnetic simulations.
+
+## References
+
+ QuLTRA Python package, release v1.0.1, archived on Zenodo: DOI [10.5281/zenodo.16897531](https://doi.org/10.5281/zenodo.16897531). The associated research article is in preparation.
+ 
 
 ## Installation
 

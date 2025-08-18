@@ -18,6 +18,11 @@ The library provides tools to compute:
 
 QuLTRA is designed to support fast, layout-independent modeling in the early design stages, before full electromagnetic simulations.
 
+References
+============
+
+ QuLTRA Python package, release v1.0.1, archived on Zenodo: DOI [10.5281/zenodo.16897531](https://doi.org/10.5281/zenodo.16897531). The associated research article is in preparation.
+
 Authors
 ==========
 
