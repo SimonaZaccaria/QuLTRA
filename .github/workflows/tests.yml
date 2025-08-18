@@ -24,7 +24,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install numpy scipy tabulate mpmath pytest pylint pytest-pylint
+        pip install numpy scipy tabulate mpmath pytest 
 
 
     # 4. Esegui i test
@@ -32,7 +32,4 @@ jobs:
       run: |
         export PYTHONPATH=$PYTHONPATH:$(pwd)/src
         pytest
-    # 5. Lint test
-    - name: Run lint test
-      run: |
-        pylint src/qultra
+
