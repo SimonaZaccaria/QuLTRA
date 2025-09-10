@@ -21,7 +21,7 @@ QuLTRA is designed to support fast, layout-independent modeling in the early des
 References
 ============
 
- QuLTRA Python package, release v1.0.1, archived on Zenodo: https://doi.org/10.5281/zenodo.16897531. The associated research article is in preparation.
+QuLTRA Python package, release v1.0.1, archived on Zenodo: https://doi.org/10.5281/zenodo.16897531.The preprint of the article is on arXiv: https://arxiv.org/abs/2509.03651
 
 Authors
 ==========
