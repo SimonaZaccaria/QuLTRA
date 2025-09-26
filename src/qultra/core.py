@@ -3,6 +3,10 @@ import scipy
 import scipy.integrate
 import numbers
 from tabulate import tabulate
+from qutip import destroy, qeye, tensor
+from copy import deepcopy
+from math import factorial
+
 
 try:
     from .constants import *   # import relativo (da pacchetto)
@@ -279,14 +283,14 @@ class L:
     
 class R:
     """
-    Represents a resistor component
-
+    Represents a resistor component.
+ 
     Parameters
     ----------
     node_minus : int
-        The node to which the negative terminal is connected
+        The node to which the negative terminal is connected, the code assumes that at least one of the two nodes is connected to ground.
     node_plus : int
-        The node to which the positive terminal is connected
+        The node to which the positive terminal is connected, the code assumes that at least one of the two nodes is connected to ground.
     R_value: float
         Resistance value [Ohm]
     """
@@ -1290,6 +1294,8 @@ class QCircuit:
         -------
         chi: numpy.ndarray
             The Cross-Kerr matrix of the system [MHz].
+        p: numpy.ndarray
+            The energy participation ratio matrix.
         """
         circuit_eigenvalues=self.complex_frequencies()
         f=[z.imag/2/np.pi for z in circuit_eigenvalues]
@@ -1328,7 +1334,7 @@ class QCircuit:
         for m in range(len(circuit_eigenvalues)):
             chi[m,m]=chi[m,m]/2
         
-        return chi
+        return chi,p
 
     def mode_frequencies(self):
         """
@@ -1400,7 +1406,7 @@ class QCircuit:
         """
         Function to visualize the Cross-Kerr matrix
         """
-        chi=self.run_epr()
+        chi, _=self.run_epr()
         N = chi.shape[0]
         table = []
 
@@ -1450,5 +1456,80 @@ class QCircuit:
             for j in range(len(port)):
                 Z_submatrix[i,j]=Z[port[i]-1,port[j]-1]
         return Z_submatrix
+
+
+    def hamiltonian(self,excitations,taylor=True,order=4):
+
+        modes=self.mode_frequencies() #GHz
+        
+
+        if isinstance(excitations,numbers.Number):
+            number_of_excitations=[excitations for _ in range(len(modes))]
+        elif isinstance(excitations,list):
+            if len(excitations)!=len(modes):
+                raise ValueError("The length of the list of excitations must be equal to the number of modes")
+            number_of_excitations=excitations
+        else:
+            raise ValueError("excitations must be a number or a list of numbers")
+        
+        if order<4:
+            raise ValueError("The order of the Taylor expansion must be >=4")
+        
+        comp=self.netlist
+        N_junct=0 #number of junction in the netlist
+        junction_index=[]
+        qeye_list = [qeye(n) for n in excitations]
+        operators=[]
+
+        #find junction
+        for i in range(len(self.netlist)):
+            if isinstance(self.netlist[i], J):
+                N_junct+=1
+                junction_index.append(i)
+
+        
+        #create the linear part of the Hamiltonian
+        #H_lin = tensor([qeye(n) for n in excitations]) * 0
+        H_lin=0
+        for index,mode in enumerate(modes):
+            a_to_tensor = deepcopy(qeye_list)
+            a_to_tensor[index] = destroy(number_of_excitations[index])
+            a = tensor(a_to_tensor)
+            operators.append(a)
+            H_lin += 1e9*mode*a.dag()*a #Hamiltonian expressed in Hz
+        if N_junct==0:
+            return H_lin
+        
+        _,p=self.run_epr() #participation ratio coefficients
+        #calculate phi operators
+        phi=[0 for _ in range(N_junct)]
+        for m in range(len(modes)):
+            a = operators[m]
+            for j in range(N_junct):
+                phi[j]+=np.sqrt(p[m,j]*modes[m]*1e9/(2*comp[junction_index[j]].Ej()))* (a + a.dag()) #zpf by using epr formula
+        
+        #create nonlinear part of the Hamiltonian
+        #H_nl = tensor([qeye(n) for n in excitations]) *0
+        H_nl=0
+        
+        if taylor:
+            #approximate the cosine potential with Taylor expansion
+            for j in range(N_junct):
+                expansion=0
+                for n in range(2,order//2+1):
+                    expansion+=(-1)**n/factorial(2*n)*(phi[j]/comp[junction_index[j]].N)**(2*n)
+                H_nl+=comp[junction_index[j]].N**2* comp[junction_index[j]].Ej()*expansion
+        else:
+            #use the exact cosine potential by expressing it thorugh Euler's exponentials
+            for j in range(N_junct):
+                #H_nl+=comp[junction_index[j]].N**2* comp[junction_index[j]].Ej()*((1j*phi[j]/comp[junction_index[j]].N).expm()+(-1j*phi[j]/comp[junction_index[j]].N).expm())/2
+                H_nl+=comp[junction_index[j]].N**2* comp[junction_index[j]].Ej()*(phi[j]/comp[junction_index[j]].N).cosm()+ comp[junction_index[j]].Ej()*phi[j]**2/2
+        H_total=H_lin-H_nl
+       
+        return H_total
+
+        
+
+
 
 
