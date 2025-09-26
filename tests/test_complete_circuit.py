@@ -21,7 +21,7 @@ def test_complete_circuit():
 
     f= circuit_with_loss.mode_frequencies()
     k= circuit_with_loss.kappa()
-    chi= circuit_with_loss.run_epr()
+    chi,_= circuit_with_loss.run_epr()
 
     assert isinstance(f, list)
     assert isinstance(k, list)
