@@ -16,8 +16,10 @@ dependencies = [
   "numpy",
   "scipy>=1.15.2",
   "tabulate",
-  " mpmath>=1.3.0",
-  "math","qutip","copy"
+  "mpmath>=1.3.0",
+  "math",
+  "qutip",
+  "copy"
 ]
 
 [build-system]
