@@ -1478,7 +1478,7 @@ class QCircuit:
         comp=self.netlist
         N_junct=0 #number of junction in the netlist
         junction_index=[]
-        qeye_list = [qeye(n) for n in excitations]
+        qeye_list = [qeye(n) for n in number_of_excitations]
         operators=[]
 
         #find junction
