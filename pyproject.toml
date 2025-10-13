@@ -18,7 +18,6 @@ dependencies = [
   "tabulate",
   "mpmath>=1.3.0",
   "qutip",
-  "copy"
 ]
 
 [build-system]
