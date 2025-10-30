@@ -178,10 +178,10 @@ Mode Frequencies (GHz): [5.765693573044772, 6.529970034428903]
 <p>Since the circuit contains a Josephson junction component, we can also compute the cross-Kerr matrix (expressed in MHz), which describes the nonlinear interactions between the modes.</p>
 <p>As with the mode frequencies, the cross-Kerr matrix can either be retrieved as a matrix using the run_epr() method, for further analysis, or visualized directly using the show_chi() method, which plots the matrix in a clear and readable format.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cross_kerr_matrix</span><span class="o">=</span><span class="n">circuit</span><span class="o">.</span><span class="n">run_epr</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cross_kerr_matrix</span><span class="p">,</span> <span class="n">_</span><span class="o">=</span><span class="n">circuit</span><span class="o">.</span><span class="n">run_epr</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">cross_kerr_matrix</span><span class="p">)</span>
 <span class="n">circuit</span><span class="o">.</span><span class="n">show_chi</span><span class="p">()</span>
 </pre></div>
@@ -192,14 +192,14 @@ Mode Frequencies (GHz): [5.765693573044772, 6.529970034428903]
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[[1.98809413e+02 5.07443676e+00]
- [5.07443676e+00 3.23801424e-02]]
+[[1.98760034e+02 5.12307173e+00]
+ [5.12307173e+00 3.30119988e-02]]
 Chi matrix [MHz]:
 +------+----------+----------+
 | Mode |    1     |    2     |
 +------+----------+----------+
-|  1   | 1.99e+02 | 5.07e+00 |
-|  2   | 5.07e+00 | 3.24e-02 |
+|  1   | 1.99e+02 | 5.12e+00 |
+|  2   | 5.12e+00 | 3.30e-02 |
 +------+----------+----------+
 </pre></div></div>
 </div>
