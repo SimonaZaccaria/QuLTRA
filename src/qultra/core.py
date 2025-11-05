@@ -1314,7 +1314,7 @@ class QCircuit:
             raise ValueError('No junctions in the circuit')
 
         p=np.zeros((len(circuit_eigenvalues),N_junct)) #energy participation coefficients matrix
-        s=np.zeros((len(circuit_eigenvalues),N_junct))
+       
         
         E_tot=self.total_inductive_energy()
 
@@ -1323,11 +1323,10 @@ class QCircuit:
             for j in range(N_junct):
                 eigenvectors=eigenvectors_with_ground[m]
                 current=comp[junction_index[j]].admittance(circuit_eigenvalues[m])*(eigenvectors[comp[junction_index[j]].node_plus]-eigenvectors[comp[junction_index[j]].node_minus])
-                V=(eigenvectors[comp[junction_index[j]].node_plus]-eigenvectors[comp[junction_index[j]].node_minus])
                 Ej=comp[junction_index[j]].J_value*abs(current)**2/2
                 p_mj=Ej/E_tot[m]
                 p[m,j]=p_mj
-                s[m,j]=np.sign(V)
+                
 
         #calculate cross-kerr and self-kerr in matrix form
         chi=np.zeros((len(circuit_eigenvalues), len(circuit_eigenvalues)))
