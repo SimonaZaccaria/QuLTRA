@@ -1314,6 +1314,8 @@ class QCircuit:
             raise ValueError('No junctions in the circuit')
 
         p=np.zeros((len(circuit_eigenvalues),N_junct)) #energy participation coefficients matrix
+        s=np.zeros((len(circuit_eigenvalues),N_junct))
+        
         E_tot=self.total_inductive_energy()
 
         #calculate energy participatio ratio matrix
@@ -1321,9 +1323,11 @@ class QCircuit:
             for j in range(N_junct):
                 eigenvectors=eigenvectors_with_ground[m]
                 current=comp[junction_index[j]].admittance(circuit_eigenvalues[m])*(eigenvectors[comp[junction_index[j]].node_plus]-eigenvectors[comp[junction_index[j]].node_minus])
+                V=(eigenvectors[comp[junction_index[j]].node_plus]-eigenvectors[comp[junction_index[j]].node_minus])
                 Ej=comp[junction_index[j]].J_value*abs(current)**2/2
                 p_mj=Ej/E_tot[m]
                 p[m,j]=p_mj
+                s[m,j]=np.sign(V)
 
         #calculate cross-kerr and self-kerr in matrix form
         chi=np.zeros((len(circuit_eigenvalues), len(circuit_eigenvalues)))
@@ -1457,6 +1461,39 @@ class QCircuit:
                 Z_submatrix[i,j]=Z[port[i]-1,port[j]-1]
         return Z_submatrix
 
+    def _sign_matrix(self,p):
+        '''
+        sm=-1*np.ones((p.shape[0],p.shape[1]))
+        for m in range(p.shape[0]):
+            sm[m,np.argmax(p[m,:])]=1 #creo la matrice dei segni
+        for j in range(p.shape[1]):
+            sm[np.argmax(p[:,j]),j]=1 #creo la matrice dei segni#creo la matrice dei segni
+        '''
+        circuit_eigenvalues=self.complex_frequencies()
+        f=[z.imag/2/np.pi for z in circuit_eigenvalues]
+        eigenvectors_with_ground=self.eigenvectors()
+        comp=self.netlist
+        N_junct=0 #number of junction in the netlist
+        junction_index=[] #index of the junction elements in the netlist
+
+        #find junction
+        for i in range(len(self.netlist)):
+            if isinstance(self.netlist[i], J):
+                N_junct+=1
+                junction_index.append(i)
+        
+        if N_junct==0:
+            raise ValueError('No junctions in the circuit')
+
+        s=np.zeros((len(circuit_eigenvalues),N_junct))
+        #calculate energy participatio ratio matrix
+        for m in range(len(circuit_eigenvalues)):
+            for j in range(N_junct):
+                eigenvectors=eigenvectors_with_ground[m]
+                V=(eigenvectors[comp[junction_index[j]].node_plus]-eigenvectors[comp[junction_index[j]].node_minus])
+                s[m,j]=np.sign(V.real)
+        #print(s)
+        return s
 
     def hamiltonian(self,excitations,taylor=True,order=4):
 
@@ -1501,12 +1538,20 @@ class QCircuit:
             return H_lin
         
         _,p=self.run_epr() #participation ratio coefficients
+        s=self._sign_matrix(p) #sign matrix
         #calculate phi operators
-        phi=[0 for _ in range(N_junct)]
+        phi = [0 * operators[0] for _ in range(N_junct)]
+
+        '''
         for m in range(len(modes)):
             a = operators[m]
             for j in range(N_junct):
                 phi[j]+=np.sqrt(p[m,j]*modes[m]*1e9/(2*comp[junction_index[j]].Ej()))* (a + a.dag()) #zpf by using epr formula
+        '''
+        for j in range(N_junct):
+            for m in range(len(modes)):
+                a = operators[m]
+                phi[j]+=s[m,j]*np.sqrt(p[m,j]*modes[m]*1e9/(2*comp[junction_index[j]].Ej()))* (a + a.dag()) #zpf by using epr formula
         
         #create nonlinear part of the Hamiltonian
         #H_nl = tensor([qeye(n) for n in excitations]) *0
@@ -1515,9 +1560,9 @@ class QCircuit:
         if taylor:
             #approximate the cosine potential with Taylor expansion
             for j in range(N_junct):
-                expansion=0
+                expansion=0*operators[0]
                 for n in range(2,order//2+1):
-                    expansion+=(-1)**n/factorial(2*n)*(phi[j]/comp[junction_index[j]].N)**(2*n)
+                    expansion+=((-1)**n/factorial(2*n))*(phi[j]/comp[junction_index[j]].N)**(2*n)
                 H_nl+=comp[junction_index[j]].N**2* comp[junction_index[j]].Ej()*expansion
         else:
             #use the exact cosine potential by expressing it thorugh Euler's exponentials
