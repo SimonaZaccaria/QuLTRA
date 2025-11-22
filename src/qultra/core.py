@@ -208,6 +208,9 @@ def zero_algo_complete(admittance,starting_point, final_point):
     minimum_points=[[zero.imag,zero.real] for zero in sol.roots]
     return minimum_points
 '''
+
+
+
 class C:
     """
     Represent a capacitor component
@@ -382,6 +385,8 @@ class CPW:
         self.node_plus=node_plus
         self.l=l #[udm]=m
         self.Z0=Z0 #charaterstic impedence
+        self.epsilon_eff=(1+constants.epsilon_r)/2 #for silicon substrate
+        self.v=c/np.sqrt(self.epsilon_eff)
         
     
     def admittance_matrix(self,z):
@@ -398,8 +403,8 @@ class CPW:
             complex admittance matrix 
         """
         #Euler exponential
-        exp_z=np.exp(self.l*z/v)
-        exp_mz=np.exp(-self.l*z/v)
+        exp_z=np.exp(self.l*z/self.v)
+        exp_mz=np.exp(-self.l*z/self.v)
 
         #sine and cosine
         sine=(exp_z-exp_mz)/2j
@@ -436,13 +441,13 @@ class CPW:
         I : complex
             Calculated current at position x.
         """
-        exp_z=np.exp(self.l*z/v)
-        exp_mz=np.exp(-self.l*z/v)
+        exp_z=np.exp(self.l*z/self.v)
+        exp_mz=np.exp(-self.l*z/self.v)
 
         V_minus=(V_l-V_0*exp_mz)/(exp_z-exp_mz)
         V_plus=(V_0*exp_z-V_l)/(exp_z-exp_mz)
 
-        I=(V_plus*np.exp(-x*z/v)-V_minus*np.exp(x*z/v))/self.Z0
+        I=(V_plus*np.exp(-x*z/self.v)-V_minus*np.exp(x*z/self.v))/self.Z0
         return I
     
     def inductive_energy(self,V_0,V_l,z):
@@ -468,7 +473,7 @@ class CPW:
         def integrand(x):
             return abs(self.current(V_0,V_l,z,x))**2
         integral_value, _ = scipy.integrate.quad(integrand, a, b) #integrate by using scipy and taking the first value of the tuple
-        E=self.Z0*integral_value/(2*v)
+        E=self.Z0*integral_value/(2*self.v)
         return E
 
 
@@ -548,6 +553,8 @@ class CPW_coupler:
         self.cpw=cpw
         self.l=l #[udm]=m
         self.C, self.L = self.CL_matrices()
+        self.epsilon_eff=(1+constants.epsilon_r)/2 #for silicon substrate
+        self.v=c/np.sqrt(self.epsilon_eff)
 
     
     def branch_point_coordinates(self):
@@ -706,12 +713,12 @@ class CPW_coupler:
             c=self.find_c(a,b,j)
             ap,bp=self.conformal_mapping(a,b,c)
             for i in range(len(cpw)):
-                C[i,j]=(epsilon_r+1)*epsilon_0*(bp[i].real-ap[i+1].real)/bp[j].imag
+                C[i,j]=(constants.epsilon_r+1)*epsilon_0*(bp[i].real-ap[i+1].real)/bp[j].imag
         if C.shape[0] == 3:
             C = np.delete(C, 1, axis=0)
             C = np.delete(C, 1, axis=1)
 
-        L=np.linalg.inv(C)/v**2
+        L=np.linalg.inv(C)/self.v**2
 
         return C,L
 
@@ -732,9 +739,9 @@ class CPW_coupler:
         l = self.l
         C= self.C
 
-        Z_matrix_inv = v* C
-        exp_z = np.exp(l * z / v)
-        exp_mz = np.exp(-l * z / v)
+        Z_matrix_inv = self.v* C
+        exp_z = np.exp(l * z / self.v)
+        exp_mz = np.exp(-l * z / self.v)
         imag_part = exp_z - exp_mz
         dim = Z_matrix_inv.shape[0]
 
@@ -812,10 +819,10 @@ class CPW_coupler:
         """
         C = self.C
 
-        Z_matrix_inv = v* C
+        Z_matrix_inv = self.v* C
         dim = Z_matrix_inv.shape[0]
-        exp_z=np.exp(self.l*z/v)
-        exp_mz=np.exp(-self.l*z/v)
+        exp_z=np.exp(self.l*z/self.v)
+        exp_mz=np.exp(-self.l*z/self.v)
         imag_part=exp_z-exp_mz
 
         V_plus=np.zeros((dim,1),dtype=np.complex128)
@@ -828,7 +835,7 @@ class CPW_coupler:
         I_plus=Z_matrix_inv @ V_plus
         I_minus=-Z_matrix_inv @ V_minus
 
-        I = I_plus * np.exp(-x * z / v) + I_minus * np.exp(x * z / v)
+        I = I_plus * np.exp(-x * z / self.v) + I_minus * np.exp(x * z / self.v)
 
         return I      
 
@@ -1551,6 +1558,7 @@ class QCircuit:
             for m in range(len(modes)):
                 a = operators[m]
                 phi[j]+=s[m,j]*np.sqrt(p[m,j]*modes[m]*1e9/(2*comp[junction_index[j]].Ej()))* (a + a.dag()) #zpf by using epr formula
+               
         
         #create nonlinear part of the Hamiltonian
         #H_nl = tensor([qeye(n) for n in excitations]) *0
@@ -1568,8 +1576,9 @@ class QCircuit:
             for j in range(N_junct):
                 #H_nl+=comp[junction_index[j]].N**2* comp[junction_index[j]].Ej()*((1j*phi[j]/comp[junction_index[j]].N).expm()+(-1j*phi[j]/comp[junction_index[j]].N).expm())/2
                 H_nl+=comp[junction_index[j]].N**2* comp[junction_index[j]].Ej()*(phi[j]/comp[junction_index[j]].N).cosm()+ comp[junction_index[j]].Ej()*phi[j]**2/2
+            
         H_total=H_lin-H_nl
-       
+        
         return H_total
 
         
