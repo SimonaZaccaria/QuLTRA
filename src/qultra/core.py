@@ -552,9 +552,10 @@ class CPW_coupler:
         self.gap=gap
         self.cpw=cpw
         self.l=l #[udm]=m
-        self.C, self.L = self.CL_matrices()
         self.epsilon_eff=(1+constants.epsilon_r)/2 #for silicon substrate
         self.v=c/np.sqrt(self.epsilon_eff)
+        self.C, self.L = self.CL_matrices()
+        
 
     
     def branch_point_coordinates(self):
@@ -590,11 +591,11 @@ class CPW_coupler:
                 for b in b_coordinates:
                     if b!=z0 and b!=z1:
                         u=u*(z-b)**(-0.5)
-                v=np.log(z-((z0+z1)/2)+(z-z0)**0.5*(z-z1)**0.5)
-                f1=u*v
+                vf=np.log(z-((z0+z1)/2)+(z-z0)**0.5*(z-z1)**0.5)
+                f1=u*vf
                 return f1
             def f2(z):
-                v=np.log(z-((z0+z1)/2)+(z-z0)**0.5*(z-z1)**0.5)
+                vf=np.log(z-((z0+z1)/2)+(z-z0)**0.5*(z-z1)**0.5)
                 prod1 = np.prod([z - c for c in c_coordinates])
                 prod2 = np.prod([(z - a)**(-0.5) for a in a_coordinates if a != z0 and a != z1]) \
                     * np.prod([(z - b)**(-0.5) for b in b_coordinates if b != z0 and b != z1])
@@ -611,7 +612,7 @@ class CPW_coupler:
                         sum_term += (z - b)**(-1)
 
                 u_prime -= (prod1 * prod2 * sum_term) / 2
-                f2=v*u_prime
+                f2=vf*u_prime
                 return f2
             integral_part = f1(z1)-f1(z0)
             def z(t):
@@ -649,12 +650,12 @@ class CPW_coupler:
                     for b in b_coordinates:
                         if b!=z0 and b!=z1:
                             u=u*(z-b)**(-0.5)
-                    v=np.log(z-((z0+z1)/2)+(z-z0)**0.5*(z-z1)**0.5)
-                    f1=u*v
+                    vf=np.log(z-((z0+z1)/2)+(z-z0)**0.5*(z-z1)**0.5)
+                    f1=u*vf
                     return f1
                 
                 def f2(z):
-                    v=np.log(z-((z0+z1)/2)+(z-z0)**0.5*(z-z1)**0.5)
+                    vf=np.log(z-((z0+z1)/2)+(z-z0)**0.5*(z-z1)**0.5)
                     prod1 = np.prod([z - complex(c) for c in c_coordinates])
                     prod2 = np.prod([(z - a)**(-0.5) for a in a_coordinates if a != z0 and a != z1]) \
                         * np.prod([(z - b)**(-0.5) for b in b_coordinates if b != z0 and b != z1])
@@ -671,7 +672,7 @@ class CPW_coupler:
                             sum_term += (z - b)**(-1)
 
                     u_prime -= (prod1 * prod2 * sum_term) / 2
-                    f2=v*u_prime
+                    f2=vf*u_prime
                     return f2
                 
                 integral_part = f1(z1)-f1(z0)
