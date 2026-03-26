@@ -245,7 +245,7 @@ class CPW_coupler:
             c=self.find_c(a,b,j)
             ap,bp=self.conformal_mapping(a,b,c)
             for i in range(len(cpw)):
-                C[i,j]=(constants.epsilon_r+1)*constants.epsilon_0*(bp[i].real-ap[i+1].real)/bp[j].imag
+                C[i,j]=(constants.epsilon_r+1)*epsilon_0*(bp[i].real-ap[i+1].real)/bp[j].imag
         if C.shape[0] == 3:
             C = np.delete(C, 1, axis=0)
             C = np.delete(C, 1, axis=1)
