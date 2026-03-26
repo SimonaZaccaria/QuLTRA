@@ -1,6 +1,5 @@
 import numpy as np
-from scipy.optimize import root
-from scipy.constants import epsilon_0, mu_0
+
 
 c=299792458 #m/s
 e = 1.60217657e-19  # electron charge
