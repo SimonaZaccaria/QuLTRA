@@ -16,5 +16,5 @@ Some tutorials use Qiskit Metal and Ansys; in this case, make sure both are inst
    ./tutorial/Exploiting_higher_modes.ipynb
    ./tutorial/Intrinsic_Purcell_filter.ipynb
    ./tutorial/Coupling_qubits_to_feedline.ipynb
-    ./tutorial/Fluxonium.ipynb
+   ./tutorial/Fluxonium.ipynb
    
