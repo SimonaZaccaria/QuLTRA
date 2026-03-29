@@ -95,7 +95,7 @@
 <h1>Coplanar waveguide line<a class="headerlink" href="#coplanar-waveguide-line" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="qultra.CPW">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qultra.</span></span><span class="sig-name descname"><span class="pre">CPW</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_minus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_plus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qultra/core.html#CPW"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qultra.CPW" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qultra.</span></span><span class="sig-name descname"><span class="pre">CPW</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_minus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_plus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qultra/components/cpw_transmission_line.html#CPW"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qultra.CPW" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Represents a CPW component</p>
 <dl class="field-list simple">
@@ -110,7 +110,7 @@
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="qultra.CPW.admittance_matrix">
-<span class="sig-name descname"><span class="pre">admittance_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qultra/core.html#CPW.admittance_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qultra.CPW.admittance_matrix" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">admittance_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qultra/components/cpw_transmission_line.html#CPW.admittance_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qultra.CPW.admittance_matrix" title="Link to this definition"></a></dt>
 <dd><p>Construct the complex admittance matrix of a cpw</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -127,7 +127,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qultra.CPW.current">
-<span class="sig-name descname"><span class="pre">current</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">V_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V_l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qultra/core.html#CPW.current"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qultra.CPW.current" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">current</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">V_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V_l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qultra/components/cpw_transmission_line.html#CPW.current"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qultra.CPW.current" title="Link to this definition"></a></dt>
 <dd><p>Calculate the current in a CPW given the voltage node values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -149,7 +149,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qultra.CPW.inductive_energy">
-<span class="sig-name descname"><span class="pre">inductive_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">V_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V_l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qultra/core.html#CPW.inductive_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qultra.CPW.inductive_energy" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">inductive_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">V_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V_l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qultra/components/cpw_transmission_line.html#CPW.inductive_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qultra.CPW.inductive_energy" title="Link to this definition"></a></dt>
 <dd><p>Calculate the inductive energy stored in a CPW.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

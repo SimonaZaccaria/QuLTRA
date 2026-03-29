@@ -95,7 +95,7 @@
 <h1>Inductor<a class="headerlink" href="#inductor" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="qultra.L">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qultra.</span></span><span class="sig-name descname"><span class="pre">L</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_minus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_plus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qultra/core.html#L"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qultra.L" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qultra.</span></span><span class="sig-name descname"><span class="pre">L</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_minus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_plus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi_ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qultra/components/inductor.html#L"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qultra.L" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Represents an inductor component</p>
 <dl class="field-list simple">
@@ -108,8 +108,22 @@
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="qultra.L.El">
+<span class="sig-name descname"><span class="pre">El</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qultra/components/inductor.html#L.El"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qultra.L.El" title="Link to this definition"></a></dt>
+<dd><p>Calculate the Inductive energy of the inductor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>El</strong> – Inductive energy.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="qultra.L.admittance">
-<span class="sig-name descname"><span class="pre">admittance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qultra/core.html#L.admittance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qultra.L.admittance" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">admittance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qultra/components/inductor.html#L.admittance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qultra.L.admittance" title="Link to this definition"></a></dt>
 <dd><p>Calculate the admittance of an inductor L</p>
 <p>Y = 1/s*L</p>
 <dl class="field-list simple">
