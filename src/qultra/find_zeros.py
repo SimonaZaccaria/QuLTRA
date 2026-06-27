@@ -27,11 +27,12 @@ def zero_algo(admittance, starting_point, final_point):
     for a in np.arange(starting_point,final_point,constants.step):
         b=a+2*constants.step
         if f(a)*f(b)<0:
-            zero=brentq(f,a,b)
+            zero, info = brentq(f, a, b, full_output=True)
             #print(zero)
             det_Y,_,k= admittance(2j*np.pi*1e9*zero)
-            if k<=1 and abs(det_Y) < 1e-3:
+            if k<=1 and abs(det_Y) < constants.det_tol:
                 zero_points.append(zero)
+                #print(info.iterations)
    
     if not zero_points:
         raise ValueError("No zeros found in the specified interval.")
@@ -59,7 +60,7 @@ def zero_algo_complete(admittance,guess_points):
     
     for x0 in complex_guess_points:
         try:
-            zero_point=newton(f_with_loss,x0,tol=constants.newton_tol, maxiter=constants.maxiter)
+            zero_point,newton_info=newton(f_with_loss,x0,tol=constants.newton_tol, maxiter=constants.maxiter,full_output=True)
             
         except RuntimeError as e_newton:
             warnings.warn(f"Newton's method failed for initial guess {x0}: {e_newton}")
@@ -72,6 +73,7 @@ def zero_algo_complete(admittance,guess_points):
             if -2*zero_point.real<=constants.k_max*1e6: #exclude points with k>k_max
                 if zero_point.imag >= 0: #positive frequency
                     zero_points.append([zero_point.imag/1e9,zero_point.real/1e6])
+                    #print(newton_info.iterations)
             else:
                 warnings.warn(f"Zero point {zero_point} has k > k_max, excluding it.")   
 
