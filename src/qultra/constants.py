@@ -1,5 +1,5 @@
 import numpy as np
-
+from scipy.constants import mu_0, epsilon_0
 
 c=299792458 #m/s
 e = 1.60217657e-19  # electron charge
@@ -13,3 +13,4 @@ step=0.1 #step for frequency sweep
 newton_tol=1.48e-7 #tolerance for newton method
 maxiter=150
 k_max=100 #MHz
+det_tol=1e-3 #tolerance for determinant of Y matrix
