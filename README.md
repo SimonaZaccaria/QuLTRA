@@ -12,7 +12,7 @@
 
 <h1 align="center">QuLTRA</h1>
 
-Descrizione del pacchetto, badge, installazione, ecc...
+
 
 ## QuLTRA:  Quantum hybrid Lumped and TRansmission lines circuits Analyzer
 
