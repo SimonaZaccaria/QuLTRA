@@ -1,0 +1,38 @@
+<svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gndGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#1e40af"/>
+    </linearGradient>
+    <linearGradient id="sigGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0ea5e9"/>
+      <stop offset="100%" stop-color="#67e8f9"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Ground plane esterno (CPW ground) -->
+  <path d="M243.56,133.51 A95,95 0 1,1 166.49,56.44"
+        fill="none" stroke="url(#gndGrad)" stroke-width="11" stroke-linecap="round"/>
+
+  <!-- Signal line centrale (CPW signal) -->
+  <path d="M226.81,136.46 A78,78 0 1,1 163.54,73.19"
+        fill="none" stroke="url(#sigGrad)" stroke-width="9" stroke-linecap="round"/>
+
+  <!-- Ground plane interno (CPW ground) -->
+  <path d="M210.07,139.41 A61,61 0 1,1 160.59,89.93"
+        fill="none" stroke="url(#gndGrad)" stroke-width="11" stroke-linecap="round"/>
+
+  <!-- Coda della Q -->
+  <line x1="205" y1="205" x2="243" y2="243" stroke="#1e40af" stroke-width="10" stroke-linecap="round"/>
+
+  <!-- Giunzione Josephson inline (quadrato con X) -->
+  <g transform="translate(243,243) rotate(45)">
+    <rect x="-13" y="-13" width="26" height="26" fill="none" stroke="#0a0e27" stroke-width="3.5"/>
+    <line x1="-13" y1="-13" x2="13" y2="13" stroke="#0a0e27" stroke-width="3.5"/>
+    <line x1="-13" y1="13" x2="13" y2="-13" stroke="#0a0e27" stroke-width="3.5"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="160" y="292" text-anchor="middle" font-family="Helvetica, Arial, sans-serif"
+        font-size="30" font-weight="600" letter-spacing="2" fill="#0f172a">QuLTRA</text>
+</svg>

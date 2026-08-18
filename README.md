@@ -6,7 +6,13 @@
 
 
 
+<p align="center">
+  <img src="qultra_logo.svg" alt="QuLTRA logo" width="200"/>
+</p>
 
+<h1 align="center">QuLTRA</h1>
+
+Descrizione del pacchetto, badge, installazione, ecc...
 
 ## QuLTRA:  Quantum hybrid Lumped and TRansmission lines circuits Analyzer
 
