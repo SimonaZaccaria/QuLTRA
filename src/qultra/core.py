@@ -181,7 +181,7 @@ class QCircuit:
 
         # Initialize lists for nodes visited and nodes to visit
         visited = []
-        to_visit = [0]  # Start traversal from ground node (0)
+        to_visit = [0]  # Start traversal from ground node (0) c'era 0
 
         # Perform simple depth-first search (DFS) to find reachable nodes
         while to_visit:
@@ -655,17 +655,11 @@ class QCircuit:
     
    
     def _there_are_fluxes(self):
-        ''' '''
-        """
-        Check if there are fluxes in the circuit
-        """
         for comp in self.netlist:
-            if isinstance(comp, J):
-                if comp.phi_ext!=0:
-                    return True
-            if isinstance(comp,L):
-                if comp.phi_ext!=0:
-                     return True
+            if isinstance(comp, (J, L)) and comp.phi_ext != 0:
+                return True
+            if isinstance(comp, CPW) and comp.phi_ext and np.any(np.asarray(comp.phi_ext) != 0):
+                return True
         return False
             
          
@@ -680,3 +674,7 @@ class QCircuit:
 
 
 
+class loop:
+    def __init__(self,components,flux):
+        self.components=components
+        self.flux=flux
