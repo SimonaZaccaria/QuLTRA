@@ -17,14 +17,21 @@ class CPW:
         Length of the line [m]
     Z0: float
         Charateristic impedence [Ohm]. Default is 50 Ohm
+    phi_ext: list of float, optional
+        External applied phase  at the two ends of the line. Default is None.
     """
-    def __init__(self,node_minus,node_plus,l,Z0=50):
+    def __init__(self,node_minus,node_plus,l,Z0=50,phi_ext=None):
         self.node_minus=node_minus
         self.node_plus=node_plus
         self.l=l #[udm]=m
         self.Z0=Z0 #charaterstic impedence
         self.epsilon_eff=(1+constants.epsilon_r)/2 #for silicon substrate
         self.v=constants.c/np.sqrt(self.epsilon_eff)
+        if phi_ext is None:
+            phi_ext = []
+        elif len(phi_ext) != 2:
+            raise ValueError(f"phi_ext must have exactly 2 values, got {len(phi_ext)}")
+        self.phi_ext = phi_ext
         
     
     def admittance_matrix(self,z):
