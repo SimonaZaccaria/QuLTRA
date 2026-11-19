@@ -38,7 +38,7 @@ def _sign_matrix(circuit: QCircuit, p):
         for j in range(N_junct):
             eigenvectors=eigenvectors_with_ground[m]
             V=(eigenvectors[comp[junction_index[j]].node_plus]-eigenvectors[comp[junction_index[j]].node_minus])
-            s[m,j]=np.sign(V.real)
+            s[m,j]=1.0 if V.real>=0 else -1.0 #evita sign(0)=0
     #print(s)
     return s
 
@@ -83,7 +83,7 @@ def nofluxes_hamiltonian(circuit: QCircuit,excitations,taylor=False,order=4):
         operators.append(a)
         H_lin += 1e9*mode*a.dag()*a #Hamiltonian expressed in Hz
     if N_junct==0:
-        return H_lin
+        return 0.5*(H_lin+H_lin.dag()) #elimina residui numerici non hermitiani
     
     _,p=circuit.run_epr() #participation ratio coefficients
     s=_sign_matrix(circuit,p) #sign matrix
@@ -121,4 +121,4 @@ def nofluxes_hamiltonian(circuit: QCircuit,excitations,taylor=False,order=4):
         
     H_total=H_lin-H_nl
     
-    return H_total
+    return 0.5*(H_total+H_total.dag()) #elimina residui numerici non hermitiani

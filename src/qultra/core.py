@@ -37,7 +37,16 @@ class QCircuit:
         The start frequency of the interval over which the circuit is analyzed.
     f_end_point : float
         The end frequency of the interval over which the circuit is analyzed.
-
+    loops : list of loop, optional
+        Fundamental loops (loops that do not contain other loops) threaded by a
+        time-dependent external flux. When the Hamiltonian is computed, the external
+        flux of each loop is distributed among the branches of the circuit in the
+        irrotational gauge and assigned to the phi_ext attribute of the J, L and CPW
+        components, added to any static phi_ext already set by the user.
+        All the fundamental loops not listed are assumed to have zero flux. If three or
+        more components are connected in parallel between the same two nodes, the
+        zero-flux loops among them must also be listed explicitly (with flux 0).
+        Default is an empty list (no time-dependent fluxes).
     Attributes
     ----------
     modes : list of lists of length 2
@@ -46,10 +55,11 @@ class QCircuit:
             - The second value represents the eigenmode dissipation rate in MHz.
     """
 
-    def __init__(self, netlist, f_starting_point,f_end_point):
+    def __init__(self, netlist, f_starting_point, f_end_point, loops=None):
         self.netlist=netlist
         self.f_starting_point = f_starting_point
         self.f_end_point = f_end_point
+        self.loops = loops if loops is not None else []
 
         if len(self.netlist) == 0:
             raise ValueError("There are no components in the circuit")
@@ -666,15 +676,29 @@ class QCircuit:
     def hamiltonian(self,excitations,taylor=False,order=4):
         from .simulations.nofluxes_simulation import nofluxes_hamiltonian
         from .simulations.fluxes_simulation import fluxes_hamiltonian
+        from .simulations.irrotational import assign_irrotational_fluxes
+
+        if self.loops:
+            assign_irrotational_fluxes(self.netlist, self.loops)
 
         if self._there_are_fluxes():
+            if taylor:
+                print("Warning: taylor/order are ignored when external fluxes are present (exact cosine used).")
             return fluxes_hamiltonian(self,excitations)
-        else:  
+        else:
             return nofluxes_hamiltonian(self,excitations,taylor,order)
 
 
-
 class loop:
+    """
+    Loop fondamentale (non contiene altri loop) con flusso esterno dipendente dal tempo.
+
+    components : componenti elencati nell'ordine in cui si incontrano girando attorno al loop.
+                 Elencati in senso orario, un flusso positivo e' entrante.
+    flux       : flusso esterno come fase adimensionale 2*pi*Phi/Phi0.
+    """
     def __init__(self,components,flux):
-        self.components=components
-        self.flux=flux
+        if len(components) == 0:
+            raise ValueError("A loop must contain at least one component")
+        self.components=list(components)
+        self.flux=float(flux)
